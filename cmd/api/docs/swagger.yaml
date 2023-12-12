@@ -1,0 +1,55 @@
+definitions:
+  models.UserDetails:
+    properties:
+      confirmpassword:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      username:
+        type: string
+    type: object
+  response.Response:
+    properties:
+      data: {}
+      error: {}
+      message:
+        type: string
+      status_code:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /users/signup:
+    post:
+      consumes:
+      - application/json
+      description: user can signup by giving their details
+      parameters:
+      - description: signup
+        in: body
+        name: signup
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserDetails'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: User Signup
+      tags:
+      - User
+swagger: "2.0"

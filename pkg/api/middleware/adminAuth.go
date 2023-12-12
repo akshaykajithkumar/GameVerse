@@ -10,8 +10,20 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-// UserAuthMiddleware is a middleware for user authentication
-func UserAuthMiddleware(c *gin.Context) {
+type AuthCustomClaims struct {
+	Id    string `json:"id"`
+	Email string `json:"email"`
+	Role  string `json:"role"`
+	jwt.StandardClaims
+}
+
+/*
+AdminAuthMiddleware is a middleware for admin authentication
+
+Parameters:
+- c: Gin Context.
+*/
+func AdminAuthMiddleware(c *gin.Context) {
 	token, err := c.Cookie("Authorization")
 	fmt.Println("Token::", token)
 	if err != nil {
@@ -34,7 +46,7 @@ func UserAuthMiddleware(c *gin.Context) {
 	}
 
 	role, ok := claims["role"].(string)
-	if !ok || role != "user" {
+	if !ok || role != "admin" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Unauthorized access"})
 		c.Abort()
 		return

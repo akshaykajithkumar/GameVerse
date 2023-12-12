@@ -7,12 +7,24 @@
 package di
 
 import (
-
+	"main/pkg/api"
+	"main/pkg/api/handler"
+	"main/pkg/config"
+	"main/pkg/db"
+	"main/pkg/repository"
+	"main/pkg/usecase"
+)
 
 // Injectors from wire.go:
 
 func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
-	
-
+	gormDB, err := db.ConnectDatabase(cfg)
+	if err != nil {
+		return nil, err
+	}
+	userRepository := repository.NewUserRepository(gormDB)
+	userUseCase := usecase.NewUserUseCase(userRepository)
+	userHandler := handler.NewUserHandler(userUseCase)
+	serverHTTP := http.NewServerHTTP(userHandler)
 	return serverHTTP, nil
 }
