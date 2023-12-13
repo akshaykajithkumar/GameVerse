@@ -76,3 +76,11 @@ type UserKey string
 func (k UserKey) String() string {
 	return string(k)
 }
+
+type UserProfileResponse struct {
+	Name     string `json:"name"`
+	Email    string `gorm:"unique" json:"email"`
+	Username string `json:"username"`
+	Phone    string `gorm:"unique" json:"phone"`
+	Bio      string `json:"bio"`
+}

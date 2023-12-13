@@ -3,6 +3,7 @@ package repository
 import (
 	"errors"
 	"fmt"
+	"main/pkg/domain"
 	interfaces "main/pkg/repository/interface"
 	"main/pkg/utils/models"
 
@@ -60,4 +61,96 @@ func (c *userDatabase) SignUp(user models.UserDetails) (models.UserResponse, err
 	}
 
 	return userDetails, nil
+}
+func (i *userDatabase) ChangePassword(id int, password string) error {
+
+	err := i.DB.Exec("UPDATE users SET password=? WHERE id=?", password, id).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func (i *userDatabase) GetPassword(id int) (string, error) {
+
+	var userPassword string
+	err := i.DB.Raw("select password from users where id = ?", id).Scan(&userPassword).Error
+	if err != nil {
+		return "", err
+	}
+	return userPassword, nil
+
+}
+func (i *userDatabase) AddBio(id int, bio string) error {
+	// Update the user's bio in the database
+	err := i.DB.Model(&domain.User{}).Where("id = ?", id).Update("bio", bio).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// EditProfile updates the user profile fields in the repository
+func (i *userDatabase) EditProfile(id int, name, email, username, phone, bio string) error {
+	// Create a map to store the fields that need to be updated
+	updateFields := make(map[string]interface{})
+
+	// Check if each field is provided and update the map accordingly
+	if name != "" {
+		updateFields["name"] = name
+	}
+
+	if email != "" {
+		updateFields["email"] = email
+	}
+
+	if username != "" {
+		updateFields["username"] = username
+	}
+
+	if phone != "" {
+		updateFields["phone"] = phone
+	}
+
+	if bio != "" {
+		updateFields["bio"] = bio
+	}
+
+	// Update the user's profile fields in the database
+	err := i.DB.Model(&domain.User{}).Where("id = ?", id).Updates(updateFields).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// retrieves specific user details by ID from the database
+func (i *userDatabase) GetProfileDetailsById(id int) (*domain.User, error) {
+	user := &domain.User{}
+	err := i.DB.Select("name, email, username, phone, bio").Where("id = ?", id).First(user).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+// for storing the reports from userReports
+func (i *userDatabase) StoreReport(reporterID, targetID int, reason string) error {
+	report := domain.Reports{
+		ReporterID: reporterID,
+		TargetID:   targetID,
+		Reason:     reason,
+	}
+
+	// Create a new report record in the database
+	if err := i.DB.Create(&report).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

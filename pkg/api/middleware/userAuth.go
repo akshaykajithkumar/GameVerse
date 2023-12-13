@@ -1,8 +1,10 @@
 package middleware
 
 import (
+	"context"
 	"fmt"
 	"main/pkg/helper"
+	"main/pkg/utils/models"
 	"net/http"
 	"time"
 
@@ -62,5 +64,19 @@ func UserAuthMiddleware(c *gin.Context) {
 		c.SetCookie("Refreshtoken", newRefreshToken, 0, "/", "", false, true)
 	}
 
+	// Get user ID from claims
+	userID, ok := claims["id"].(float64)
+	if !ok {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Unauthorized access id"})
+		c.Abort()
+		return
+	}
+	userIDString := fmt.Sprintf("%v", userID)
+	var key models.UserKey = "userID"
+	var val models.UserKey = models.UserKey(userIDString)
+
+	ctx := context.WithValue(c, key, val)
+	// Set the context to the request
+	c.Request = c.Request.WithContext(ctx)
 	c.Next()
 }

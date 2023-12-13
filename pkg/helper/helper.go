@@ -3,6 +3,7 @@ package helper
 import (
 	"errors"
 	"fmt"
+	"main/pkg/domain"
 	"main/pkg/utils/models"
 	"strconv"
 	"time"
@@ -23,7 +24,7 @@ type AuthCustomClaims struct {
 	jwt.StandardClaims
 }
 
-func GenerateTokensAdmin(admin models.AdminDetailsResponse) (string, string, error) {
+func GenerateTokensAdmin(admin domain.Admin) (string, string, error) {
 	accessTokenClaims := &AuthCustomClaims{
 		Id:    uint(admin.ID),
 		Email: admin.Email,
@@ -136,9 +137,9 @@ func TokensFromRefreshToken(prevRefreshTokenString string) (string, string, erro
 
 	// Use the claims to generate a new access token
 	newAccessTokenClaims := &AuthCustomClaims{
-		Id:    uint(prevRefreshClaims["Id"].(float64)),
-		Email: prevRefreshClaims["Email"].(string),
-		Role:  prevRefreshClaims["Role"].(string),
+		Id:    uint(prevRefreshClaims["id"].(float64)),
+		Email: prevRefreshClaims["email"].(string),
+		Role:  prevRefreshClaims["role"].(string),
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Minute * 20).Unix(),
 			IssuedAt:  time.Now().Unix(),
@@ -153,9 +154,9 @@ func TokensFromRefreshToken(prevRefreshTokenString string) (string, string, erro
 
 	// Generate a new refresh token for the next cycle
 	newRefreshTokenClaims := &AuthCustomClaims{
-		Id:    uint(prevRefreshClaims["Id"].(float64)),
-		Email: prevRefreshClaims["Email"].(string),
-		Role:  prevRefreshClaims["Role"].(string),
+		Id:    uint(prevRefreshClaims["id"].(float64)),
+		Email: prevRefreshClaims["email"].(string),
+		Role:  prevRefreshClaims["role"].(string),
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 24 * 30).Unix(),
 			IssuedAt:  time.Now().Unix(),
@@ -236,7 +237,7 @@ Parameters:
 - password: Twillio Password.
 */
 func TwilioSetup(username string, password string) {
-
+	// log.Printf("username=%s,password=%s", username, password)
 	client = twilio.NewRestClientWithParams(twilio.ClientParams{
 		Username: username,
 		Password: password,

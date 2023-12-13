@@ -10,12 +10,12 @@ type User struct {
 	Password   string `json:"password"`
 	Phone      string `gorm:"unique" json:"phone"`
 	Permission bool   `gorm:"default:false" json:"permission"`
+	Bio        string `json:"bio"`
 }
 
-type UserProfile struct {
-	ID             int    `json:"id"`
-	Bio            string `json:"bio"`
-	ProfilePicture string `json:"profile_picture"`
-	UserID         uint   `json:"user_id"`
-	User           User   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+type Reports struct {
+	ID         int    `gorm:"primaryKey" json:"id"`
+	ReporterID int    `json:"reporter_id"`
+	TargetID   int    `json:"target_id"`
+	Reason     string `json:"reason"`
 }

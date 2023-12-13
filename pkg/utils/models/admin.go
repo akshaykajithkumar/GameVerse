@@ -21,3 +21,7 @@ type AdminDetailsResponse struct {
 	Name  string `json:"name" `
 	Email string `json:"email" `
 }
+type Adminresponse struct {
+	ID    uint   `json:"id" gorm:"unique;not null"`
+	Email string `json:"email" gorm:"validate:required"`
+}
