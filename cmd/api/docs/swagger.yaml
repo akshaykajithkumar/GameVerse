@@ -19,6 +19,24 @@ definitions:
       re_password:
         type: string
     type: object
+  models.ForgotPasswordData:
+    properties:
+      code:
+        type: string
+      confirm_password:
+        maxLength: 20
+        minLength: 8
+        type: string
+      password:
+        maxLength: 20
+        minLength: 8
+        type: string
+      phone:
+        type: string
+    required:
+    - code
+    - phone
+    type: object
   models.OTPData:
     properties:
       phone:
@@ -139,33 +157,6 @@ paths:
       summary: Get Reports List
       tags:
       - Admin
-  /admin/users/block:
-    post:
-      consumes:
-      - application/json
-      description: using this handler admins can block an user
-      parameters:
-      - description: user-id
-        in: query
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/response.Response'
-      security:
-      - Bearer: []
-      summary: Block User
-      tags:
-      - Admin
   /admin/users/getusers:
     get:
       consumes:
@@ -198,11 +189,11 @@ paths:
       summary: Get Users
       tags:
       - Admin
-  /admin/users/unblock:
+  /admin/users/toggle-block:
     post:
       consumes:
       - application/json
-      description: UnBlock user
+      description: using this handler admins can block or unblock an user
       parameters:
       - description: user-id
         in: query
@@ -222,9 +213,63 @@ paths:
             $ref: '#/definitions/response.Response'
       security:
       - Bearer: []
-      summary: UnBlock an existing user
+      summary: Block or unblock User
       tags:
       - Admin
+  /users/change-password:
+    patch:
+      consumes:
+      - application/json
+      description: user can change their password
+      parameters:
+      - description: changepassword
+        in: body
+        name: changepassword
+        required: true
+        schema:
+          $ref: '#/definitions/models.ChangePassword'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Change Password
+      tags:
+      - User
+  /users/forgotpassword:
+    post:
+      consumes:
+      - application/json
+      description: Forgot password functionality
+      parameters:
+      - description: Forgot password data
+        in: body
+        name: forgotPasswordData
+        required: true
+        schema:
+          $ref: '#/definitions/models.ForgotPasswordData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Forgot Password
+      tags:
+      - User
   /users/login:
     post:
       consumes:
@@ -251,124 +296,7 @@ paths:
       summary: User Login
       tags:
       - User
-  /users/otplogin:
-    post:
-      consumes:
-      - application/json
-      description: OTP login send otp
-      parameters:
-      - description: otp-data
-        in: body
-        name: otp
-        required: true
-        schema:
-          $ref: '#/definitions/models.OTPData'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/response.Response'
-      summary: Send OTP
-      tags:
-      - User
-  /users/profile/AddBio:
-    post:
-      consumes:
-      - application/json
-      description: Add a bio to the user profile
-      parameters:
-      - description: Bio to be added
-        in: query
-        name: bio
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.Response'
-      security:
-      - Bearer: []
-      summary: Add Bio to User
-      tags:
-      - User
-  /users/profile/EditProfile:
-    patch:
-      consumes:
-      - application/json
-      description: Edit the user profile including name, email, username, phone, and
-        bio
-      parameters:
-      - description: Updated Name
-        in: query
-        name: name
-        type: string
-      - description: Updated Email
-        in: query
-        name: email
-        type: string
-      - description: Updated Username
-        in: query
-        name: username
-        type: string
-      - description: Updated Phone
-        in: query
-        name: phone
-        type: string
-      - description: Updated Bio
-        in: query
-        name: bio
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.Response'
-      security:
-      - Bearer: []
-      summary: Edit User Profile
-      tags:
-      - User
-  /users/profile/GetProfile:
-    get:
-      consumes:
-      - application/json
-      description: Get the user profile details
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.UserProfileResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.Response'
-      security:
-      - Bearer: []
-      summary: Get User Profile
-      tags:
-      - User
-  /users/profile/logout:
+  /users/logout:
     post:
       consumes:
       - application/json
@@ -389,18 +317,40 @@ paths:
       summary: User Logout
       tags:
       - User
-  /users/profile/settings/security/change-password:
+  /users/profile:
+    get:
+      consumes:
+      - application/json
+      description: Get the user profile details
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Get User Profile
+      tags:
+      - User
+  /users/profile/EditProfile:
     patch:
       consumes:
       - application/json
-      description: user can change their password
+      description: Edit the user profile including name, email, username, phone, and
+        bio
       parameters:
-      - description: changepassword
+      - description: User Profile Request
         in: body
-        name: changepassword
+        name: userProfileRequest
         required: true
         schema:
-          $ref: '#/definitions/models.ChangePassword'
+          $ref: '#/definitions/models.UserProfileResponse'
       produces:
       - application/json
       responses:
@@ -408,13 +358,13 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.Response'
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/response.Response'
       security:
       - Bearer: []
-      summary: Change Password
+      summary: Edit User Profile
       tags:
       - User
   /users/reportUser:
@@ -447,6 +397,32 @@ paths:
       security:
       - Bearer: []
       summary: Report User
+      tags:
+      - User
+  /users/sendotp:
+    post:
+      consumes:
+      - application/json
+      description: OTP login send otp
+      parameters:
+      - description: otp-data
+        in: body
+        name: otp
+        required: true
+        schema:
+          $ref: '#/definitions/models.OTPData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Send OTP
       tags:
       - User
   /users/signup:

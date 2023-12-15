@@ -93,8 +93,8 @@ func (ad *AdminHandler) GetUsers(c *gin.Context) {
 
 }
 
-// @Summary		Block User
-// @Description	using this handler admins can block an user
+// @Summary		Block or unblock User
+// @Description	using this handler admins can block or unblock an user
 // @Tags			Admin
 // @Accept			json
 // @Produce		json
@@ -102,11 +102,11 @@ func (ad *AdminHandler) GetUsers(c *gin.Context) {
 // @Param			id	query		string	true	"user-id"
 // @Success		200	{object}	response.Response{}
 // @Failure		500	{object}	response.Response{}
-// @Router			/admin/users/block [post]
-func (ad *AdminHandler) BlockUser(c *gin.Context) {
+// @Router			/admin/users/toggle-block [post]
+func (ad *AdminHandler) ToggleBlockUser(c *gin.Context) {
 
 	id := c.Query("id")
-	err := ad.adminUseCase.BlockUser(id)
+	err := ad.adminUseCase.ToggleBlockUser(id)
 	if err != nil {
 		errorRes := response.ClientResponse(http.StatusBadRequest, "user could not be blocked", nil, err.Error())
 		c.JSON(http.StatusBadRequest, errorRes)
@@ -116,31 +116,6 @@ func (ad *AdminHandler) BlockUser(c *gin.Context) {
 	successRes := response.ClientResponse(http.StatusOK, "Successfully blocked the user", nil, nil)
 	c.JSON(http.StatusOK, successRes)
 
-}
-
-// @Summary		UnBlock an existing user
-// @Description	UnBlock user
-// @Tags			Admin
-// @Accept			json
-// @Produce		json
-// @Security		Bearer
-// @Param			id	query		string	true	"user-id"
-// @Success		200	{object}	response.Response{}
-// @Failure		500	{object}	response.Response{}
-// @Router			/admin/users/unblock [POST]
-func (ad *AdminHandler) UnBlockUser(c *gin.Context) {
-
-	id := c.Query("id")
-	err := ad.adminUseCase.UnBlockUser(id)
-
-	if err != nil {
-		errorRes := response.ClientResponse(http.StatusBadRequest, "user could not be unblocked", nil, err.Error())
-		c.JSON(http.StatusBadRequest, errorRes)
-		return
-	}
-
-	successRes := response.ClientResponse(http.StatusOK, "Successfully unblocked the user", nil, nil)
-	c.JSON(http.StatusOK, successRes)
 }
 
 // @Summary		Get Reports List

@@ -6,4 +6,5 @@ type OtpRepository interface {
 	FindUserByMobileNumber(phone string) bool
 	UserDetailsUsingPhone(phone string) (models.UserResponse, error)
 	UpdateUserPermissionByPhone(phone string) error
+	ChangePasswordByPhone(phone string, newPassword string) error
 }

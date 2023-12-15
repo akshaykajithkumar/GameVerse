@@ -14,8 +14,8 @@ func AdminRoutes(engine *gin.RouterGroup, adminHandler *handler.AdminHandler) {
 	{
 		usermanagement := engine.Group("/users")
 		{
-			usermanagement.POST("/block", adminHandler.BlockUser)
-			usermanagement.POST("/unblock", adminHandler.UnBlockUser)
+			usermanagement.POST("/toggle-block", adminHandler.ToggleBlockUser)
+
 			usermanagement.GET("/getusers", adminHandler.GetUsers)
 		}
 

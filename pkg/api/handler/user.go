@@ -95,7 +95,7 @@ func (i *UserHandler) Login(c *gin.Context) {
 // @Security		Bearer
 // @Success		200	{object}	response.Response{}
 // @Failure		500	{object}	response.Response{}
-// @Router			/users/profile/settings/security/change-password [patch]
+// @Router			/users/change-password [patch]
 func (i *UserHandler) ChangePassword(c *gin.Context) {
 
 	id, err := helper.GetUserID(c)
@@ -123,51 +123,14 @@ func (i *UserHandler) ChangePassword(c *gin.Context) {
 
 }
 
-// @Summary		Add Bio to User
-// @Description	Add a bio to the user profile
+// EditProfile is a handler for editing user profile details.
+// @Summary		Edit User Profile
+// @Description	Edit the user profile including name, email, username, phone, and bio
 // @Tags			User
 // @Accept		json
 // @Produce		json
-// @Param			bio	query	string	true	"Bio to be added"
 // @Security		Bearer
-// @Success		200	{object}	response.Response{}
-// @Failure		400	{object}	response.Response{}
-// @Router			/users/profile/AddBio [post]
-func (u *UserHandler) AddBio(c *gin.Context) {
-	userID, err := helper.GetUserID(c)
-	if err != nil {
-		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not get userID", nil, err.Error())
-		c.JSON(http.StatusBadRequest, errorRes)
-		return
-	}
-
-	bio := c.Query("bio")
-	if bio == "" {
-		errorRes := response.ClientResponse(http.StatusBadRequest, "Bio cannot be empty", nil, nil)
-		c.JSON(http.StatusBadRequest, errorRes)
-		return
-	}
-
-	if err := u.userUseCase.AddBio(userID, bio); err != nil {
-		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not add bio to the user", nil, err.Error())
-		c.JSON(http.StatusBadRequest, errorRes)
-		return
-	}
-	successRes := response.ClientResponse(http.StatusOK, "Successfully added bio to the user", nil, nil)
-	c.JSON(http.StatusOK, successRes)
-}
-
-// @Summary		Edit User Profile
-// @Description	Edit the user profile including name, email, username, phone, and bio
-// @Tags	 		User
-// @Accept		json
-// @Produce		json
-// @Param			name		query	string	false	"Updated Name"
-// @Param			email		query	string	false	"Updated Email"
-// @Param			username	query	string	false	"Updated Username"
-// @Param			phone		query	string	false	"Updated Phone"
-// @Param			bio			query	string	false	"Updated Bio"
-// @Security		Bearer
+// @Param			userProfileRequest	body	models.UserProfileResponse	true	"User Profile Request"
 // @Success		200	{object}	response.Response{}
 // @Failure		400	{object}	response.Response{}
 // @Router			/users/profile/EditProfile [patch]
@@ -179,17 +142,18 @@ func (u *UserHandler) EditProfile(c *gin.Context) {
 		return
 	}
 
-	// Extract updated fields from query parameters
-	name := c.Query("name")
-	email := c.Query("email")
-	username := c.Query("username")
-	phone := c.Query("phone")
-	bio := c.Query("bio")
+	// Bind request body to UserProfileResponse struct
+	var userProfileRequest models.UserProfileResponse
+	if err := c.ShouldBindJSON(&userProfileRequest); err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Invalid request body", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
 
-	// You can validate the fields as needed
+	// Validate the fields as needed
 
 	// Call the use case to update the user profile
-	if err := u.userUseCase.EditProfile(userID, name, email, username, phone, bio); err != nil {
+	if err := u.userUseCase.EditProfile(userID, userProfileRequest.Name, userProfileRequest.Email, userProfileRequest.Username, userProfileRequest.Phone, userProfileRequest.Bio); err != nil {
 		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not edit user profile", nil, err.Error())
 		c.JSON(http.StatusBadRequest, errorRes)
 		return
@@ -207,7 +171,7 @@ func (u *UserHandler) EditProfile(c *gin.Context) {
 // @Security		Bearer
 // @Success		200	{object}	models.UserProfileResponse
 // @Failure		400	{object}	response.Response{}
-// @Router			/users/profile/GetProfile [get]
+// @Router			/users/profile [get]
 func (u *UserHandler) GetProfile(c *gin.Context) {
 	userID, err := helper.GetUserID(c)
 	if err != nil {
@@ -237,7 +201,7 @@ func (u *UserHandler) GetProfile(c *gin.Context) {
 // @Security		Bearer
 // @Success		200	{object}	response.Response{}
 // @Failure		500	{object}	response.Response{}
-// @Router			/users/profile/logout [post]
+// @Router			/users/logout [post]
 func (i *UserHandler) Logout(c *gin.Context) {
 
 	// Clear the access token and refresh token cookies

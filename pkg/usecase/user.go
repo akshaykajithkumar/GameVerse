@@ -123,17 +123,6 @@ func (i *userUseCase) ChangePassword(id int, old string, password string, repass
 
 const maxBioLength = 60
 
-func (u *userUseCase) AddBio(id int, bio string) error {
-	// Check if bio length exceeds the limit
-	if len(bio) > maxBioLength {
-		return errors.New("bio length exceeds the limit")
-	}
-	if err := u.userRepo.AddBio(id, bio); err != nil {
-		return err
-	}
-
-	return nil
-}
 func (u *userUseCase) EditProfile(id int, name, email, username, phone, bio string) error {
 	// Validate the bio field length
 	if len(bio) > maxBioLength {

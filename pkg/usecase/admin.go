@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"errors"
 	"main/pkg/domain"
 	"main/pkg/helper"
 	interfaces "main/pkg/repository/interface"
@@ -59,50 +58,25 @@ func (ad *adminUseCase) GetUsers(page int, limit int) ([]models.UserDetailsAtAdm
 
 }
 
-func (ad *adminUseCase) BlockUser(id string) error {
-
+func (ad *adminUseCase) ToggleBlockUser(id string) error {
+	// Retrieve user by ID
 	user, err := ad.adminRepository.GetUserByID(id)
 	if err != nil {
 		return err
 	}
 
-	if !user.Permission {
-		return errors.New("already blocked")
-	} else {
-		user.Permission = false
-	}
+	// Toggle the Permission field
+	user.Permission = !user.Permission
 
+	// Update user in the repository
 	err = ad.adminRepository.UpdateBlockUserByID(user)
 	if err != nil {
 		return err
 	}
 
 	return nil
-
 }
 
-// unblock user
-func (ad *adminUseCase) UnBlockUser(id string) error {
-
-	user, err := ad.adminRepository.GetUserByID(id)
-	if err != nil {
-		return err
-	}
-
-	if !user.Permission {
-		user.Permission = true
-	} else {
-		return errors.New("already unblocked")
-	}
-
-	err = ad.adminRepository.UpdateBlockUserByID(user)
-	if err != nil {
-		return err
-	}
-
-	return nil
-
-}
 func (u *adminUseCase) GetReports(page, limit int) ([]domain.Reports, error) {
 	reports, err := u.adminRepository.GetReports(page, limit)
 	if err != nil {

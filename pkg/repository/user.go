@@ -83,15 +83,6 @@ func (i *userDatabase) GetPassword(id int) (string, error) {
 	return userPassword, nil
 
 }
-func (i *userDatabase) AddBio(id int, bio string) error {
-	// Update the user's bio in the database
-	err := i.DB.Model(&domain.User{}).Where("id = ?", id).Update("bio", bio).Error
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
 
 // EditProfile updates the user profile fields in the repository
 func (i *userDatabase) EditProfile(id int, name, email, username, phone, bio string) error {
@@ -152,5 +143,16 @@ func (i *userDatabase) StoreReport(reporterID, targetID int, reason string) erro
 		return err
 	}
 
+	return nil
+}
+func (ot *otpRepository) ChangePasswordByPhone(phone string, newPassword string) error {
+	//a raw SQL query to update the password based on the phone number
+	err := ot.DB.Exec("UPDATE users SET password=? WHERE phone=?", newPassword, phone).Error
+	if err != nil {
+		// If an error occurs during the update, return the error
+		return err
+	}
+
+	// Return nil if the update is successful
 	return nil
 }
