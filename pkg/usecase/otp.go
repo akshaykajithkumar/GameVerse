@@ -56,10 +56,6 @@ func (ot *otpUseCase) VerifyOTP(code models.VerifyData) (models.TokenUser, error
 
 func (ot *otpUseCase) SendOTP(phone string) error {
 
-	ok := ot.otpRepository.FindUserByMobileNumber(phone)
-	if !ok {
-		return errors.New("the user does not exist")
-	}
 	log.Printf("ACCOUNTSID=%s, AUTHTOKEN=%s", ot.cfg.ACCOUNTSID, ot.cfg.AUTHTOKEN)
 	helper.TwilioSetup(ot.cfg.ACCOUNTSID, ot.cfg.AUTHTOKEN)
 	log.Printf("SERVICESID=%s", ot.cfg.SERVICESID)
@@ -75,7 +71,10 @@ func (ot *otpUseCase) SendOTP(phone string) error {
 
 }
 func (ot *otpUseCase) ForgotPassword(details models.ForgotPasswordData) (models.TokenUser, error) {
-
+	ok := ot.otpRepository.FindUserByMobileNumber(details.PhoneNumber)
+	if !ok {
+		return models.TokenUser{}, errors.New("the user does not exist")
+	}
 	helper.TwilioSetup(ot.cfg.ACCOUNTSID, ot.cfg.AUTHTOKEN)
 	err := helper.TwilioVerifyOTP(ot.cfg.SERVICESID, details.Code, details.PhoneNumber)
 	if err != nil {
