@@ -124,16 +124,17 @@ func (i *UserHandler) ChangePassword(c *gin.Context) {
 }
 
 // EditProfile is a handler for editing user profile details.
-// @Summary		Edit User Profile
-// @Description	Edit the user profile including name, email, username, phone, and bio
-// @Tags			User
-// @Accept		json
-// @Produce		json
-// @Security		Bearer
-// @Param			userProfileRequest	body	models.UserProfileResponse	true	"User Profile Request"
-// @Success		200	{object}	response.Response{}
-// @Failure		400	{object}	response.Response{}
-// @Router			/users/profile/EditProfile [patch]
+// @Summary      Edit User Profile
+// @Description  Edit the user profile including name, email, username, phone, bio, and profile picture
+// @Tags         User
+// @Accept       multipart/form-data
+// @Produce      json
+// @Security     Bearer
+// @Param			userProfileRequest	body	models.EditUserProfileResponse	true	"User Profile Request"
+// @Param        ProfilePicture      formData  file    true  "Profile Picture"
+// @Success      200  {object} response.Response{}
+// @Failure      400  {object} response.Response{}
+// @Router       /users/profile/EditProfile [patch]
 func (u *UserHandler) EditProfile(c *gin.Context) {
 	userID, err := helper.GetUserID(c)
 	if err != nil {
@@ -144,16 +145,22 @@ func (u *UserHandler) EditProfile(c *gin.Context) {
 
 	// Bind request body to UserProfileResponse struct
 	var userProfileRequest models.UserProfileResponse
-	if err := c.ShouldBindJSON(&userProfileRequest); err != nil {
+	if err := c.ShouldBind(&userProfileRequest); err != nil {
 		errorRes := response.ClientResponse(http.StatusBadRequest, "Invalid request body", nil, err.Error())
 		c.JSON(http.StatusBadRequest, errorRes)
 		return
 	}
 
-	// Validate the fields as needed
+	// Retrieve file from form
+	file, err := c.FormFile("ProfilePicture")
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Error retrieving image from form", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
 
 	// Call the use case to update the user profile
-	if err := u.userUseCase.EditProfile(userID, userProfileRequest.Name, userProfileRequest.Email, userProfileRequest.Username, userProfileRequest.Phone, userProfileRequest.Bio); err != nil {
+	if err := u.userUseCase.EditProfile(userID, userProfileRequest.Name, userProfileRequest.Email, userProfileRequest.Username, userProfileRequest.Phone, userProfileRequest.Bio, file); err != nil {
 		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not edit user profile", nil, err.Error())
 		c.JSON(http.StatusBadRequest, errorRes)
 		return

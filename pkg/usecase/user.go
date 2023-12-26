@@ -6,6 +6,7 @@ import (
 	interfaces "main/pkg/repository/interface"
 	services "main/pkg/usecase/interface"
 	"main/pkg/utils/models"
+	"mime/multipart"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -123,14 +124,17 @@ func (i *userUseCase) ChangePassword(id int, old string, password string, repass
 
 const maxBioLength = 60
 
-func (u *userUseCase) EditProfile(id int, name, email, username, phone, bio string) error {
+func (u *userUseCase) EditProfile(id int, name, email, username, phone, bio string, image *multipart.FileHeader) error {
 	// Validate the bio field length
 	if len(bio) > maxBioLength {
 		return errors.New("bio length exceeds the limit")
 	}
-
+	url, err := helper.AddImageToS3(image)
+	if err != nil {
+		return err
+	}
 	// Call the repository to update the user profile
-	if err := u.userRepo.EditProfile(id, name, email, username, phone, bio); err != nil {
+	if err := u.userRepo.EditProfile(id, name, email, username, phone, bio, url); err != nil {
 		return err
 	}
 
@@ -152,6 +156,7 @@ func (u *userUseCase) GetProfile(id int) (*models.UserProfileResponse, error) {
 		Username: user.Username,
 		Phone:    user.Phone,
 		Bio:      user.Bio,
+		URL:      user.URL,
 	}
 
 	return userProfile, nil

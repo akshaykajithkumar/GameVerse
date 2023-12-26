@@ -32,13 +32,13 @@ import (
 //			}
 //		}
 //	}
-func UserRoutes(engine *gin.RouterGroup, userHandler *handler.UserHandler, otpHandler *handler.OtpHandler) {
+func UserRoutes(engine *gin.RouterGroup, userHandler *handler.UserHandler, otpHandler *handler.OtpHandler, categoyHandler *handler.CategoryHandler) {
 	engine.POST("/login", userHandler.Login)
 	engine.POST("/signup", userHandler.SignUp)
 	engine.POST("/sendotp", otpHandler.SendOTP)
 	engine.POST("/verifyotp", otpHandler.VerifyOTP)
 	engine.POST("/forgotpassword", otpHandler.ForgotPassword)
-
+	engine.GET("/category", categoyHandler.CategoriesList)
 	// Auth middleware
 	engine.Use(middleware.UserAuthMiddleware)
 

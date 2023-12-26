@@ -1,13 +1,20 @@
 package helper
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"main/pkg/domain"
 	"main/pkg/utils/models"
+	"mime/multipart"
+	"os"
 	"strconv"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"github.com/spf13/viper"
@@ -300,4 +307,41 @@ func TwilioVerifyOTP(serviceID string, code string, phone string) error {
 
 	return errors.New("failed to validate otp")
 
+}
+
+func AddImageToS3(file *multipart.FileHeader) (string, error) {
+	// Set AWS credentials using environment variables
+	os.Setenv("AWS_ACCESS_KEY_ID", "AKIAX2D5JXBMLEOAGJOW")
+	os.Setenv("AWS_SECRET_ACCESS_KEY", "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")
+
+	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("ap-south-1"))
+	if err != nil {
+		fmt.Println("configuration error:", err)
+		return "", err
+	}
+
+	client := s3.NewFromConfig(cfg)
+
+	uploader := manager.NewUploader(client)
+
+	f, openErr := file.Open()
+	if openErr != nil {
+		fmt.Println("opening error:", openErr)
+		return "", openErr
+	}
+	defer f.Close()
+
+	result, uploadErr := uploader.Upload(context.TODO(), &s3.PutObjectInput{
+		Bucket: aws.String("bucketforgameverse"),
+		Key:    aws.String(file.Filename),
+		Body:   f,
+		//ACL:    "public-read",
+	})
+
+	if uploadErr != nil {
+		fmt.Println("uploading error:", uploadErr)
+		return "", uploadErr
+	}
+
+	return result.Location, nil
 }

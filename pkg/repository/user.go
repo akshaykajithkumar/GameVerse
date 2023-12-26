@@ -85,7 +85,7 @@ func (i *userDatabase) GetPassword(id int) (string, error) {
 }
 
 // EditProfile updates the user profile fields in the repository
-func (i *userDatabase) EditProfile(id int, name, email, username, phone, bio string) error {
+func (i *userDatabase) EditProfile(id int, name, email, username, phone, bio, url string) error {
 	// Create a map to store the fields that need to be updated
 	updateFields := make(map[string]interface{})
 
@@ -109,6 +109,9 @@ func (i *userDatabase) EditProfile(id int, name, email, username, phone, bio str
 	if bio != "" {
 		updateFields["bio"] = bio
 	}
+	if url != "" {
+		updateFields["url"] = url
+	}
 
 	// Update the user's profile fields in the database
 	err := i.DB.Model(&domain.User{}).Where("id = ?", id).Updates(updateFields).Error
@@ -122,7 +125,7 @@ func (i *userDatabase) EditProfile(id int, name, email, username, phone, bio str
 // retrieves specific user details by ID from the database
 func (i *userDatabase) GetProfileDetailsById(id int) (*domain.User, error) {
 	user := &domain.User{}
-	err := i.DB.Select("name, email, username, phone, bio").Where("id = ?", id).First(user).Error
+	err := i.DB.Select("name, email, username, phone, bio,url").Where("id = ?", id).First(user).Error
 	if err != nil {
 		return nil, err
 	}

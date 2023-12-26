@@ -12,7 +12,7 @@ type UserRepository interface {
 	ChangePassword(id int, password string) error
 	GetPassword(id int) (string, error)
 	UserBlockStatus(email string) (bool, error)
-	EditProfile(id int, name, email, username, phone, bio string) error
+	EditProfile(id int, name, email, username, phone, bio string, url string) error
 	GetProfileDetailsById(id int) (*domain.User, error)
 	StoreReport(reporterID, targetID int, reason string) error
 }

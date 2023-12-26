@@ -19,6 +19,19 @@ definitions:
       re_password:
         type: string
     type: object
+  models.EditUserProfileResponse:
+    properties:
+      bio:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      username:
+        type: string
+    type: object
   models.ForgotPasswordData:
     properties:
       code:
@@ -43,6 +56,13 @@ definitions:
         type: string
     required:
     - phone
+    type: object
+  models.SetNewName:
+    properties:
+      current:
+        type: string
+      new:
+        type: string
     type: object
   models.UserDetails:
     properties:
@@ -75,6 +95,8 @@ definitions:
       name:
         type: string
       phone:
+        type: string
+      url:
         type: string
       username:
         type: string
@@ -125,6 +147,120 @@ paths:
           schema:
             $ref: '#/definitions/response.Response'
       summary: Admin Login
+      tags:
+      - Admin
+  /admin/category:
+    get:
+      consumes:
+      - application/json
+      description: Admin can view the list of  Categories
+      parameters:
+      - description: page
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: limit
+        in: query
+        name: limit
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: List Categories
+      tags:
+      - Admin
+  /admin/category/add:
+    post:
+      consumes:
+      - application/json
+      description: Admin can add new categories for products
+      parameters:
+      - description: category
+        in: query
+        name: category
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Add Category
+      tags:
+      - Admin
+  /admin/category/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Admin can delete a category
+      parameters:
+      - description: id
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Delete Category
+      tags:
+      - Admin
+  /admin/category/update:
+    patch:
+      consumes:
+      - application/json
+      description: Admin can update name of a category into new name
+      parameters:
+      - description: set new name
+        in: body
+        name: set_new_name
+        required: true
+        schema:
+          $ref: '#/definitions/models.SetNewName'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Update Category
       tags:
       - Admin
   /admin/reports:
@@ -216,6 +352,38 @@ paths:
       summary: Block or unblock User
       tags:
       - Admin
+  /users/category:
+    get:
+      consumes:
+      - application/json
+      description: User can view the list of  Categories
+      parameters:
+      - description: page
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: limit
+        in: query
+        name: limit
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: List Categories
+      tags:
+      - User
   /users/change-password:
     patch:
       consumes:
@@ -341,16 +509,21 @@ paths:
   /users/profile/EditProfile:
     patch:
       consumes:
-      - application/json
-      description: Edit the user profile including name, email, username, phone, and
-        bio
+      - multipart/form-data
+      description: Edit the user profile including name, email, username, phone, bio,
+        and profile picture
       parameters:
       - description: User Profile Request
         in: body
         name: userProfileRequest
         required: true
         schema:
-          $ref: '#/definitions/models.UserProfileResponse'
+          $ref: '#/definitions/models.EditUserProfileResponse'
+      - description: Profile Picture
+        in: formData
+        name: ProfilePicture
+        required: true
+        type: file
       produces:
       - application/json
       responses:

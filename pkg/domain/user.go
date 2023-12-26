@@ -11,6 +11,7 @@ type User struct {
 	Phone      string `gorm:"unique" json:"phone"`
 	Permission bool   `gorm:"default:false" json:"permission"`
 	Bio        string `json:"bio"`
+	URL        string `json:"url"`
 }
 
 type Reports struct {

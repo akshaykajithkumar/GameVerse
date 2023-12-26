@@ -83,4 +83,12 @@ type UserProfileResponse struct {
 	Username string `json:"username"`
 	Phone    string `gorm:"unique" json:"phone"`
 	Bio      string `json:"bio"`
+	URL      string `json:"url"`
+}
+type EditUserProfileResponse struct {
+	Name     string `json:"name"`
+	Email    string `gorm:"unique" json:"email"`
+	Username string `json:"username"`
+	Phone    string `gorm:"unique" json:"phone"`
+	Bio      string `json:"bio"`
 }
