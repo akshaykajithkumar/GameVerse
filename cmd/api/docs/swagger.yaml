@@ -32,6 +32,16 @@ definitions:
       username:
         type: string
     type: object
+  models.EditVideoDetails:
+    properties:
+      description:
+        type: string
+      title:
+        type: string
+    required:
+    - description
+    - title
+    type: object
   models.ForgotPasswordData:
     properties:
       code:
@@ -185,7 +195,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Admin can add new categories for products
+      description: Admin can add new categories for contents
       parameters:
       - description: category
         in: query
@@ -384,6 +394,43 @@ paths:
       summary: List Categories
       tags:
       - User
+  /users/category/videos:
+    get:
+      consumes:
+      - application/json
+      description: List videos in a specific category based on category ID
+      parameters:
+      - description: Category ID
+        in: query
+        name: categoryID
+        required: true
+        type: integer
+      - description: page
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: limit
+        in: query
+        name: limit
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: List Videos by Category
+      tags:
+      - User
   /users/change-password:
     patch:
       consumes:
@@ -540,6 +587,92 @@ paths:
       summary: Edit User Profile
       tags:
       - User
+  /users/profile/videos:
+    get:
+      description: List videos for a particular user with pagination
+      parameters:
+      - description: Limit per page
+        in: query
+        name: limit
+        required: true
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: List Videos
+      tags:
+      - User
+  /users/profile/videos/delete:
+    delete:
+      description: Delete a video file based on its ID
+      parameters:
+      - description: Video ID to be deleted
+        in: query
+        name: VideoID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Delete Video
+      tags:
+      - User
+  /users/profile/videos/editVideo:
+    patch:
+      consumes:
+      - application/json
+      description: Patch the title and description of a video
+      parameters:
+      - description: Video ID
+        in: query
+        name: VideoID
+        required: true
+        type: integer
+      - description: Video Details Request
+        in: body
+        name: videoDetailsRequest
+        required: true
+        schema:
+          $ref: '#/definitions/models.EditVideoDetails'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Edit Video Details
+      tags:
+      - User
   /users/reportUser:
     post:
       consumes:
@@ -622,6 +755,49 @@ paths:
           schema:
             $ref: '#/definitions/response.Response'
       summary: User Signup
+      tags:
+      - User
+  /users/upload/video:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload a video file along with title, description, and category
+        ID
+      parameters:
+      - description: Video File
+        in: formData
+        name: VideoFile
+        required: true
+        type: file
+      - description: Category ID
+        in: formData
+        name: CategoryID
+        required: true
+        type: integer
+      - description: Title
+        in: formData
+        name: Title
+        required: true
+        type: string
+      - description: Description
+        in: formData
+        name: Description
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Upload Video
       tags:
       - User
   /users/verifyotp:

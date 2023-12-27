@@ -24,12 +24,12 @@ Parameters:
 Returns:
 - *ServerHTTP: A pointer to the newly created ServerHTTP instance.
 */
-func NewServerHTTP(userHandler *handler.UserHandler, otpHandler *handler.OtpHandler, adminHandler *handler.AdminHandler, categoryHandler *handler.CategoryHandler) *ServerHTTP {
+func NewServerHTTP(userHandler *handler.UserHandler, otpHandler *handler.OtpHandler, adminHandler *handler.AdminHandler, categoryHandler *handler.CategoryHandler, videoHandler *handler.VideoHandler) *ServerHTTP {
 	engine := gin.New()
 	engine.Use(gin.Logger())
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
-	routes.UserRoutes(engine.Group("/users"), userHandler, otpHandler, categoryHandler)
+	routes.UserRoutes(engine.Group("/users"), userHandler, otpHandler, categoryHandler, videoHandler)
 	routes.AdminRoutes(engine.Group("/admin"), adminHandler, categoryHandler)
 
 	return &ServerHTTP{engine: engine}

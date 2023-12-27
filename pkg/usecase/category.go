@@ -5,6 +5,7 @@ import (
 	"main/pkg/domain"
 	interfaces "main/pkg/repository/interface"
 	services "main/pkg/usecase/interface"
+	"main/pkg/utils/models"
 )
 
 type categoryUseCase struct {
@@ -64,4 +65,25 @@ func (Cat *categoryUseCase) GetCategories(page, limit int) ([]domain.Category, e
 		return []domain.Category{}, err
 	}
 	return categories, nil
+}
+
+// ListVideosByCategory retrieves a list of videos in a specific category based on category ID, page, and limit.
+func (uc *categoryUseCase) ListVideosByCategory(categoryID, page, limit int) ([]models.VideoResponses, error) {
+	// Validate categoryID
+	if categoryID <= 0 {
+		return []models.VideoResponses{}, errors.New("invalid category ID")
+	}
+
+	// Validate page and limit
+	if page < 1 || limit < 1 {
+		return []models.VideoResponses{}, errors.New("page and limit must be positive integers")
+	}
+
+	// Fetch videos from the repository
+	videos, err := uc.repository.ListVideosByCategory(categoryID, page, limit)
+	if err != nil {
+		return []models.VideoResponses{}, err
+	}
+
+	return videos, nil
 }

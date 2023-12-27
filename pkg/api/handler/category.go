@@ -173,3 +173,52 @@ func (cat *CategoryHandler) CategoriesList(c *gin.Context) {
 	successRes := response.ClientResponse(http.StatusOK, "Successfully retrieved the categories", categories, nil)
 	c.JSON(http.StatusOK, successRes)
 }
+
+// ListVideosByCategory is a handler for listing videos in a particular category.
+// @Summary      List Videos by Category
+// @Description  List videos in a specific category based on category ID
+// @Tags         User
+// @Accept       json
+// @Produce      json
+// @Param        categoryID   query   int     true  "Category ID"
+// @Param        page         query   string  true  "page"
+// @Param        limit        query   string  true  "limit"
+// @Security     Bearer
+// @Success      200  {object} response.Response{}
+// @Failure      400  {object} response.Response{}
+// @Router       /users/category/videos [get]
+func (u *CategoryHandler) ListVideosByCategory(c *gin.Context) {
+	categoryIDStr := c.Query("categoryID")
+	categoryID, err := strconv.Atoi(categoryIDStr)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Invalid category ID", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	pageStr := c.Query("page")
+	page, err := strconv.Atoi(pageStr)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Page number not in the right format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	limitStr := c.Query("limit")
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Limit not in the right format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	videos, err := u.CategoryUseCase.ListVideosByCategory(categoryID, page, limit)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not retrieve videos for the category", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	successRes := response.ClientResponse(http.StatusOK, "Successfully retrieved videos for the category", videos, nil)
+	c.JSON(http.StatusOK, successRes)
+}

@@ -1,6 +1,9 @@
 package interfaces
 
-import "main/pkg/domain"
+import (
+	"main/pkg/domain"
+	"main/pkg/utils/models"
+)
 
 type CategoryRepository interface {
 	AddCategory(category string) (domain.Category, error)
@@ -8,4 +11,6 @@ type CategoryRepository interface {
 	UpdateCategory(current, new string) (domain.Category, error)
 	DeleteCategory(categoryID string) error
 	GetCategories(page, limit int) ([]domain.Category, error)
+	// ListVideosByCategory(categoryID, page, limit int) (models.VideoResponses, error)
+	ListVideosByCategory(categoryID, page, limit int) ([]models.VideoResponses, error)
 }

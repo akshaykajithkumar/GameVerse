@@ -4,6 +4,7 @@ import (
 	"errors"
 	"main/pkg/domain"
 	interfaces "main/pkg/repository/interface"
+	"main/pkg/utils/models"
 	"strconv"
 
 	"gorm.io/gorm"
@@ -109,4 +110,58 @@ func (c *categoryRepository) GetCategories(page, limit int) ([]domain.Category, 
 	}
 
 	return categories, nil
+}
+
+// func (vr *categoryRepository) ListVideosByCategory(categoryID, page, limit int) (models.VideoResponses, error) {
+// 	// Validate categoryID
+// 	if categoryID <= 0 {
+// 		return models.VideoResponses{}, errors.New("invalid category ID")
+// 	}
+
+// 	// Validate page and limit
+// 	if page < 1 || limit < 1 {
+// 		return models.VideoResponses{}, errors.New("page and limit must be positive integers")
+// 	}
+
+// 	// Calculate offset for pagination
+// 	offset := (page - 1) * limit
+
+// 	var videos models.VideoResponses
+
+// 	// Fetch videos from the database based on category ID, page, and limit
+// 	if err := vr.DB.Table("videos").
+// 		Select("id, user_id, title, description, url, category_id").
+// 		Where("category_id = ?", categoryID).
+// 		Offset(offset).
+// 		Limit(limit).
+// 		Scan(&videos).Error; err != nil {
+// 		return models.VideoResponses{}, err
+// 	}
+
+//		return videos, nil
+//	}
+
+func (vr *categoryRepository) ListVideosByCategory(categoryID, page, limit int) ([]models.VideoResponses, error) {
+	// Validate categoryID
+	if categoryID <= 0 {
+		return nil, errors.New("invalid category ID")
+	}
+
+	// Validate page and limit
+	if page < 1 || limit < 1 {
+		return nil, errors.New("page and limit must be positive integers")
+	}
+
+	// Calculate offset for pagination
+	offset := (page - 1) * limit
+
+	var videos []models.VideoResponses
+
+	// Fetch videos from the database based on category ID, page, and limit
+	if err := vr.DB.Raw("SELECT id, user_id, title, description, url, category_id FROM videos WHERE category_id = ? OFFSET ? LIMIT ?", categoryID, offset, limit).
+		Scan(&videos).Error; err != nil {
+		return nil, err
+	}
+
+	return videos, nil
 }
