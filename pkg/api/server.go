@@ -30,7 +30,7 @@ func NewServerHTTP(userHandler *handler.UserHandler, otpHandler *handler.OtpHand
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	routes.UserRoutes(engine.Group("/users"), userHandler, otpHandler, categoryHandler, videoHandler)
-	routes.AdminRoutes(engine.Group("/admin"), adminHandler, categoryHandler)
+	routes.AdminRoutes(engine.Group("/admin"), adminHandler, categoryHandler, videoHandler)
 
 	return &ServerHTTP{engine: engine}
 }

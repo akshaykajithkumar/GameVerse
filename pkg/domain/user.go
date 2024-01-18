@@ -20,3 +20,9 @@ type Reports struct {
 	TargetID   int    `json:"target_id"`
 	Reason     string `json:"reason"`
 }
+type UserTags struct {
+	ID     uint `json:"id" gorm:"primaryKey"`
+	UserID int  `json:"user_id"`
+	TagID  uint `json:"tag_id" gorm:"not null"`
+	Tag    Tag  `json:"-" gorm:"foreignKey:TagID;constraint:OnDelete:CASCADE"`
+}

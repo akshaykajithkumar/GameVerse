@@ -67,6 +67,19 @@ definitions:
     required:
     - phone
     type: object
+  models.RecommendationListResponse:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      url:
+        type: string
+      user_id:
+        type: integer
+    type: object
   models.SetNewName:
     properties:
       current:
@@ -133,6 +146,29 @@ definitions:
 info:
   contact: {}
 paths:
+  /admin/addtags:
+    post:
+      description: Add tags to the database
+      parameters:
+      - description: Comma-separated list of tags
+        in: query
+        name: tags
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Add Tags
+      tags:
+      - Admin
   /admin/adminlogin:
     post:
       consumes:
@@ -273,6 +309,29 @@ paths:
       summary: Update Category
       tags:
       - Admin
+  /admin/deletetags:
+    delete:
+      description: Delete a tag from the database based on a tag ID
+      parameters:
+      - description: Tag ID to delete
+        in: query
+        name: tagID
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Delete Tag
+      tags:
+      - Admin
   /admin/reports:
     get:
       consumes:
@@ -301,6 +360,23 @@ paths:
       security:
       - Bearer: []
       summary: Get Reports List
+      tags:
+      - Admin
+  /admin/tags:
+    get:
+      description: Get a list of tags
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Get Tags
       tags:
       - Admin
   /admin/users/getusers:
@@ -615,6 +691,57 @@ paths:
       summary: List Videos
       tags:
       - User
+  /users/profile/videos/comment:
+    post:
+      description: Add a new comment to a video
+      parameters:
+      - description: Video ID
+        in: query
+        name: videoID
+        required: true
+        type: string
+      - description: Comment content
+        in: query
+        name: content
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Comment on Video
+      tags:
+      - User
+  /users/profile/videos/comments:
+    get:
+      description: Retrieve comments for a specific video
+      parameters:
+      - description: Video ID
+        in: query
+        name: videoID
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Get Comments
+      tags:
+      - User
   /users/profile/videos/delete:
     delete:
       description: Delete a video file based on its ID
@@ -673,6 +800,86 @@ paths:
       summary: Edit Video Details
       tags:
       - User
+  /users/profile/videos/like:
+    post:
+      description: Toggle the like status of a video for the authenticated user
+      parameters:
+      - description: Video ID
+        in: query
+        name: videoID
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Toggle Like Video
+      tags:
+      - User
+  /users/profile/videos/recommendation:
+    get:
+      description: Generate a recommendation list of videos for the authenticated
+        user based on tags.
+      parameters:
+      - description: Page number for pagination
+        in: query
+        name: page
+        type: integer
+      - description: Number of items per page
+        in: query
+        name: limit
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.RecommendationListResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Recommendation List
+      tags:
+      - User
+  /users/profile/videos/watch:
+    get:
+      description: Watch a specific video for a particular user
+      parameters:
+      - description: User ID
+        in: query
+        name: userID
+        required: true
+        type: integer
+      - description: Video ID
+        in: query
+        name: videoID
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Watch Video
+      tags:
+      - User
   /users/reportUser:
     post:
       consumes:
@@ -703,6 +910,29 @@ paths:
       security:
       - Bearer: []
       summary: Report User
+      tags:
+      - User
+  /users/selectTags:
+    post:
+      description: Store multiple tags for a specific user
+      parameters:
+      - description: Comma-separated list of tag IDs (e.g., {1,2})
+        in: query
+        name: tagIDs
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Store User Tags
       tags:
       - User
   /users/sendotp:
@@ -757,6 +987,23 @@ paths:
       summary: User Signup
       tags:
       - User
+  /users/tags:
+    get:
+      description: Get a list of tags
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Get Tags
+      tags:
+      - User
   /users/upload/video:
     post:
       consumes:
@@ -784,6 +1031,11 @@ paths:
         name: Description
         required: true
         type: string
+      - description: Video Tags
+        in: formData
+        name: tags
+        required: true
+        type: array
       produces:
       - application/json
       responses:

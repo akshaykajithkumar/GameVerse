@@ -11,6 +11,8 @@ type Video struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	URL         string `json:"url"`
+	Likes       int    `json:"likes"`
+	Views       int    `json:"views"`
 }
 type VideoResponses struct {
 	ID          uint   `json:"id"`
@@ -20,6 +22,14 @@ type VideoResponses struct {
 	URL         string `json:"url"`
 	CategoryID  int    `json:"category_id"`
 }
+type RecommendationListResponse struct {
+	ID          uint   `json:"id"`
+	UserID      uint   `json:"user_id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	URL         string `json:"url"`
+}
+
 type EditVideoDetails struct {
 	Title       string `json:"title" binding:"required"`
 	Description string `json:"description" binding:"required"`

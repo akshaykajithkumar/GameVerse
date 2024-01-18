@@ -14,16 +14,24 @@ func UserRoutes(engine *gin.RouterGroup, userHandler *handler.UserHandler, otpHa
 	engine.POST("/verifyotp", otpHandler.VerifyOTP)
 	engine.POST("/forgotpassword", otpHandler.ForgotPassword)
 	engine.GET("/category", categoyHandler.CategoriesList)
+
 	engine.GET("/category/videos", categoyHandler.ListVideosByCategory)
 	// Auth middleware
 	engine.Use(middleware.UserAuthMiddleware)
+	engine.GET("/tags", videohandler.GetTagsForUserHandler)
+	engine.POST("/selectTags", videohandler.StoreUserTags)
 	engine.POST("/upload/video", videohandler.UploadVideo)
-
 	profile := engine.Group("/profile")
 	{
 		profile.GET("/videos", videohandler.ListVideos)
+		profile.GET("/videos/recommendation", videohandler.RecommendationList)
+
+		profile.GET("/videos/comments", videohandler.GetCommentsHandler)
+		profile.POST("/videos/comment", videohandler.CommentVideoHandler)
+		profile.GET("/videos/watch", videohandler.WatchVideo)
 		profile.PATCH("/videos/editVideo", videohandler.EditVideoDetails)
 		profile.DELETE("/videos/delete", videohandler.DeleteVideo)
+		profile.POST("/videos/like", videohandler.ToggleLikeVideo)
 		profile.PATCH("/EditProfile", userHandler.EditProfile)
 		profile.GET("", userHandler.GetProfile) // Change the route from "/GetProfile" to "/profile"
 
