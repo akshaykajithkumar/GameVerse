@@ -150,3 +150,94 @@ func getPaginationParams(c *gin.Context) (int, int) {
 
 	return page, limit
 }
+
+// @Summary		Add Subscription Plan
+// @Description	using this handler admins can add a new subscription plan
+// @Tags			Admin
+// @Accept			json
+// @Produce		json
+// @Security		Bearer
+// @Param			name	query		string	true	"Plan Name"
+// @Param			duration	query		int	true	"Plan Duration (in days)"
+// @Param			price	query		float64	true	"Plan Price"
+// @Success		201	{object}	response.Response{}
+// @Failure		400	{object}	response.Response{}
+// @Router			/admin/plans/add [post]
+func (ad *AdminHandler) AddSubscriptionPlan(c *gin.Context) {
+	// Parse parameters
+	name := c.Query("name")
+	duration, err := strconv.Atoi(c.Query("duration"))
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "invalid duration", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	price, err := strconv.ParseFloat(c.Query("price"), 64)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "invalid price", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	// Call the function to add the subscription plan
+	err = ad.adminUseCase.AddSubscriptionPlan(name, duration, price)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "plan could not be added", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	successRes := response.ClientResponse(http.StatusCreated, "Successfully added the subscription plan", nil, nil)
+	c.JSON(http.StatusCreated, successRes)
+}
+
+// @Summary	Delete Subscription Plan
+// @Description	using this handler admins can delete a subscription plan
+// @Tags			Admin
+// @Accept			json
+// @Produce		json
+// @Security		Bearer
+// @Param			id	query		int	true	"Plan ID"
+// @Success		200	{object}	response.Response{}
+// @Failure		400	{object}	response.Response{}
+// @Router			/admin/plans/delete [delete]
+func (ad *AdminHandler) DeleteSubscriptionPlan(c *gin.Context) {
+	planID, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "invalid plan ID", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	err = ad.adminUseCase.DeleteSubscriptionPlan(planID)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "plan could not be deleted", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	successRes := response.ClientResponse(http.StatusOK, "Successfully deleted the subscription plan", nil, nil)
+	c.JSON(http.StatusOK, successRes)
+}
+
+// @Summary	Get List of Subscription Plans
+// @Description	using this handler admins can get the list of subscription plans
+// @Tags			Admin
+// @Accept			json
+// @Produce		json
+// @Security		Bearer
+// @Success		200	{object}	[]domain.SubscriptionPlan
+// @Failure		400	{object}	response.Response{}
+// @Router			/admin/plans [get]
+func (ad *AdminHandler) GetSubscriptionPlans(c *gin.Context) {
+	plans, err := ad.adminUseCase.GetSubscriptionPlans()
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "could not fetch subscription plans", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	// Return the list of subscription plans in the response
+	c.JSON(http.StatusOK, plans)
+}

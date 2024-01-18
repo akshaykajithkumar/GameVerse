@@ -28,6 +28,11 @@ func AdminRoutes(engine *gin.RouterGroup, adminHandler *handler.AdminHandler, ca
 			categorymanagement.PATCH("/update", categoryHandler.UpdateCategory)
 			categorymanagement.DELETE("/delete", categoryHandler.DeleteCategory)
 		}
-
+		planmanagement := engine.Group("/plans")
+		{
+			planmanagement.GET("/", adminHandler.GetSubscriptionPlans)
+			planmanagement.POST("/add", adminHandler.AddSubscriptionPlan)
+			planmanagement.DELETE("/delete", adminHandler.DeleteSubscriptionPlan)
+		}
 	}
 }

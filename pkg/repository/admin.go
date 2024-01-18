@@ -85,3 +85,44 @@ func (i *adminRepository) GetReports(page, limit int) ([]domain.Reports, error) 
 
 	return reports, nil
 }
+func (ar *adminRepository) AddSubscriptionPlan(name string, duration int, price float64) error {
+	// Build the raw SQL query
+	query := "INSERT INTO subscription_plans (name, duration, price) VALUES (?, ?, ?)"
+
+	// Execute the raw SQL query
+	result := ar.DB.Exec(query, name, duration, price)
+	if result.Error != nil {
+		// Handle any error during the execution, you can log or perform additional actions as needed
+		return result.Error
+	}
+
+	// Return nil if the subscription plan was inserted successfully
+	return nil
+}
+func (ar *adminRepository) DeleteSubscriptionPlan(planID int) error {
+	// Build the raw SQL query to delete the subscription plan by ID
+	query := "DELETE FROM subscription_plans WHERE id = ?"
+
+	// Execute the raw SQL query
+	result := ar.DB.Exec(query, planID)
+	if result.Error != nil {
+		// Handle any error during the execution, you can log or perform additional actions as needed
+		return result.Error
+	}
+
+	// Return nil if the subscription plan was deleted successfully
+	return nil
+}
+func (ar *adminRepository) GetSubscriptionPlans() ([]domain.SubscriptionPlan, error) {
+	var plans []domain.SubscriptionPlan
+
+	// Fetch the list of subscription plans from the database
+	err := ar.DB.Find(&plans).Error
+	if err != nil {
+		// Handle any error during the fetch operation, you can log or perform additional actions as needed
+		return nil, err
+	}
+
+	// Return the list of subscription plans
+	return plans, nil
+}

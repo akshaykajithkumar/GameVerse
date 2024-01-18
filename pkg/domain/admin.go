@@ -7,3 +7,9 @@ type Admin struct {
 	Email    string `json:"email" gorm:"validate:required"`
 	Password string `json:"password" gorm:"validate:required"`
 }
+type SubscriptionPlan struct {
+	ID       int     `gorm:"primaryKey" json:"id"`
+	Name     string  `json:"name"`
+	Duration int     `json:"duration"`
+	Price    float64 `json:"price"`
+}

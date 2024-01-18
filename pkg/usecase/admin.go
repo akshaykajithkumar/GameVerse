@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"errors"
 	"main/pkg/domain"
 	"main/pkg/helper"
 	interfaces "main/pkg/repository/interface"
@@ -83,4 +84,47 @@ func (u *adminUseCase) GetReports(page, limit int) ([]domain.Reports, error) {
 		return nil, err
 	}
 	return reports, nil
+}
+func (u *adminUseCase) AddSubscriptionPlan(name string, duration int, price float64) error {
+	// Validate the input parameters
+	if duration <= 10 || price <= 10 {
+		// Return an error if any of the values are not above 10
+		return errors.New("duration and price must be above 10")
+	}
+
+	// Perform any additional business logic or validation specific to adding a subscription plan
+
+	// Call the repository function to add the subscription plan
+	err := u.adminRepository.AddSubscriptionPlan(name, duration, price)
+	if err != nil {
+		// Handle any error from the repository, you can log or perform additional actions as needed
+		return err
+	}
+
+	// Return nil if the subscription plan was added successfully
+	return nil
+}
+func (u *adminUseCase) DeleteSubscriptionPlan(planID int) error {
+	// Perform any business logic or validation specific to deleting a subscription plan
+
+	// Call the repository function to delete the subscription plan
+	err := u.adminRepository.DeleteSubscriptionPlan(planID)
+	if err != nil {
+		// Handle any error from the repository, you can log or perform additional actions as needed
+		return err
+	}
+
+	// Return nil if the subscription plan was deleted successfully
+	return nil
+}
+func (u *adminUseCase) GetSubscriptionPlans() ([]domain.SubscriptionPlan, error) {
+	// Call the repository function to fetch the list of subscription plans
+	plans, err := u.adminRepository.GetSubscriptionPlans()
+	if err != nil {
+		// Handle any error from the repository, you can log or perform additional actions as needed
+		return nil, err
+	}
+
+	// Return the list of subscription plans
+	return plans, nil
 }
