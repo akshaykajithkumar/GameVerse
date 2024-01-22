@@ -3,6 +3,7 @@ package domain
 import (
 	"fmt"
 	"strings"
+	"time"
 )
 
 type Category struct {
@@ -50,8 +51,9 @@ type Video struct {
 	Category    Category `json:"category" gorm:"foreignkey:CategoryID;constraint:OnDelete:CASCADE"`
 	Likes       int      `json:"likes" gorm:"default:0"`
 	Views       int      `json:"views" gorm:"default:0"`
-	// Tags        Tags     `json:"tags" gorm:"column:tags;type:text[]"`
+	Exclusive   bool     `json:"exclusive" gorm:"default:false"`
 }
+
 type VideoLikes struct {
 	ID      uint `json:"id" gorm:"primaryKey"`
 	UserID  uint `json:"user_id"`
@@ -77,4 +79,17 @@ type VideoTags struct {
 	VideoID uint   `json:"video_id" gorm:"not null"`
 	Tag     string `json:"tag" gorm:"not null"`
 	// Tag     Tag  `json:"-" gorm:"foreignKey:TagID;constraint:OnDelete:CASCADE"`
+}
+
+type SubscriptionList struct {
+	ID               int              `json:"id" gorm:"primaryKey"`
+	CreatorID        int              `json:"creator_id"`
+	UserID           int              `json:"user_id"`
+	User             User             `json:"-" gorm:"foreignKey:UserID"`
+	SubscribedAt     time.Time        `json:"subscribed_at" gorm:"-"`
+	PlanID           int              `json:"plan_id"`
+	PaymentStatus    string           `json:"paymentStatus" gorm:"default:'Pending'"`
+	SubscriptionPlan SubscriptionPlan `json:"-" gorm:"foreignKey:PlanID"`
+	PaymentID        string           `json:"paymentID"`
+	IsActive         bool             `json:"isActive" gorm:"default:false"`
 }

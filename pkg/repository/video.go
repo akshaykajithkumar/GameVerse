@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"main/pkg/domain"
 	interfaces "main/pkg/repository/interface"
 	"main/pkg/utils/models"
@@ -57,7 +58,7 @@ func NewVideoRepository(db *gorm.DB) interfaces.VideoRepository {
 //		// Assuming that video.ID is the auto-generated ID of the newly created video
 //		return video.ID, nil
 //	}
-func (vr *VideoRepository) UploadVideo(userID int, categoryID int, title, description, url string, tags []string) (uint, error) {
+func (vr *VideoRepository) UploadVideo(userID int, categoryID int, title, description, url string, tags []string, exclusive bool) (uint, error) {
 	// Create a new Video instance
 	video := domain.Video{
 		UserID:      uint(userID),
@@ -65,6 +66,7 @@ func (vr *VideoRepository) UploadVideo(userID int, categoryID int, title, descri
 		Title:       title,
 		Description: description,
 		URL:         url,
+		Exclusive:   exclusive,
 	}
 
 	if err := vr.DB.Create(&video).Error; err != nil {
@@ -307,4 +309,47 @@ func (vr *VideoRepository) GetVideoTagsByVideoID(videoID uint) ([]string, error)
 	}
 
 	return tags, nil
+}
+
+// IsVideoExclusive checks if a video is marked as exclusive.
+func (vr *VideoRepository) IsVideoExclusive(videoID int) (bool, error) {
+	var video domain.Video
+	err := vr.DB.Where("id = ?", videoID).First(&video).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			// Video not found
+			return false, errors.New("video not found")
+		}
+		// Error occurred while querying the database
+		return false, err
+	}
+
+	return video.Exclusive, nil
+}
+
+// IsUserSubscribed checks if a user is subscribed to a specific creator.
+// func (vr *VideoRepository) IsUserSubscribed(userID int, creatorID int) (bool, error) {
+// 	var subscription domain.SubscriptionList
+// 	err := vr.DB.Where("user_id = ? AND creator_id = ? AND is_active = ?", userID, creatorID, true).First(&subscription).Error
+// 	if err != nil {
+// 		if errors.Is(err, gorm.ErrRecordNotFound) {
+// 			// User is not subscribed
+// 			return false, nil
+// 		}
+// 		// Error occurred while querying the database
+// 		return false, err
+// 	}
+
+//		// User is subscribed
+//		return true, nil
+//	}
+func (vr *VideoRepository) IsUserSubscribed(userID int, creatorID int) (bool, error) {
+	var count int
+	err := vr.DB.Raw("SELECT COUNT(*) FROM subscription_lists WHERE user_id = ? AND creator_id = ? AND is_active = true", userID, creatorID).Scan(&count).Error
+	if err != nil {
+		return false, err
+	}
+
+	// If the count is greater than 0, the user is subscribed; otherwise, the user is not subscribed
+	return count > 0, nil
 }

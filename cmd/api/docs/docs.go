@@ -375,7 +375,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "Plan Duration (in months)",
+                        "description": "Plan Duration (in days)",
                         "name": "duration",
                         "in": "query",
                         "required": true
@@ -882,6 +882,62 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/plans/choose-plan": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "User can choose a subscription plan",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Choose Plan",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "creator ID",
+                        "name": "creator_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Subscription plan ID",
+                        "name": "plan_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/users/profile": {
             "get": {
                 "security": [
@@ -1282,8 +1338,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "User ID",
-                        "name": "userID",
+                        "description": "Creator ID",
+                        "name": "creatorID",
                         "in": "query",
                         "required": true
                     },
@@ -1559,6 +1615,12 @@ const docTemplate = `{
                         "name": "tags",
                         "in": "formData",
                         "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Exclusive Video",
+                        "name": "exclusive",
+                        "in": "query"
                     }
                 ],
                 "responses": {

@@ -6,7 +6,7 @@ import (
 )
 
 type VideoRepository interface {
-	UploadVideo(userID int, categoryID int, title, description, url string, tags []string) (uint, error)
+	UploadVideo(userID int, categoryID int, title, description, url string, tags []string, exclusive bool) (uint, error)
 	ListVideos(userID, page, limit int) ([]models.Video, error)
 	EditVideoDetails(videoID int, title, description string) error
 	DeleteVideo(videoID int) error
@@ -25,4 +25,6 @@ type VideoRepository interface {
 	GetUserTags(userID int) ([]string, error)
 	UpdateVideoLikesCount(videoID uint) error
 	GetVideoTagsByVideoID(videoID uint) ([]string, error)
+	IsUserSubscribed(userID int, creatorID int) (bool, error)
+	IsVideoExclusive(videoID int) (bool, error)
 }

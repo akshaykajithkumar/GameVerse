@@ -24,20 +24,21 @@ Parameters:
 Returns:
 - *ServerHTTP: A pointer to the newly created ServerHTTP instance.
 */
-func NewServerHTTP(userHandler *handler.UserHandler, otpHandler *handler.OtpHandler, adminHandler *handler.AdminHandler, categoryHandler *handler.CategoryHandler, videoHandler *handler.VideoHandler) *ServerHTTP {
+func NewServerHTTP(userHandler *handler.UserHandler, otpHandler *handler.OtpHandler, adminHandler *handler.AdminHandler, categoryHandler *handler.CategoryHandler, videoHandler *handler.VideoHandler, subscriptionHandler *handler.SubscriptionHandler) *ServerHTTP {
 	engine := gin.New()
 	engine.Use(gin.Logger())
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	engine.LoadHTMLGlob("pkg/templates/*.html")
 
-	routes.UserRoutes(engine.Group("/users"), userHandler, otpHandler, categoryHandler, videoHandler)
+	routes.UserRoutes(engine.Group("/users"), userHandler, otpHandler, categoryHandler, videoHandler, subscriptionHandler)
 	routes.AdminRoutes(engine.Group("/admin"), adminHandler, categoryHandler, videoHandler)
 
-	return &ServerHTTP{engine: engine}
+	return &ServerHTTP{
+
+		engine: engine,
+	}
 }
 
-/*
-Start starts the HTTP server and listens on port 1245.
-*/
 func (sh *ServerHTTP) Start() {
 	sh.engine.Run(":1245")
 

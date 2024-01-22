@@ -25,7 +25,12 @@ require (
 )
 
 require (
-	github.com/IBM/sarama v1.42.1 // indirect
+	github.com/IBM/sarama v1.42.1
+	github.com/razorpay/razorpay-go v1.3.1
+	github.com/robfig/cron v1.2.0
+)
+
+require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.5.4 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.16.13 // indirect

@@ -7,11 +7,11 @@ import (
 )
 
 type VideoUseCase interface {
-	UploadVideo(userID int, categoryID int, title, description string, file *multipart.FileHeader, tags []string) error
+	UploadVideo(userID int, categoryID int, title, description string, file *multipart.FileHeader, tags []string, exclusive bool) error
 	ListVideos(userID int, page, limit int) ([]models.Video, error)
 	EditVideoDetails(videoID int, title, description string) error
 	DeleteVideo(videoID int) error
-	WatchVideo(userID int, videoId int) (string, error)
+	WatchVideo(userID int, videoID int, creatorID int) (string, error)
 	ToggleLikeVideo(userID uint, videoID uint) error
 	CommentVideo(userID uint, videoID uint, content string) error
 	GetComments(videoID uint) ([]domain.Comment, error)

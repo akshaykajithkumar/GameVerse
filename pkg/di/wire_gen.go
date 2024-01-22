@@ -37,6 +37,9 @@ func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 	videoRepository := repository.NewVideoRepository(gormDB)
 	videoUseCase := usecase.NewVideoUseCase(videoRepository)
 	videoHandler := handler.NewVideoHandler(videoUseCase)
-	serverHTTP := http.NewServerHTTP(userHandler, otpHandler, adminHandler, categoryHandler, videoHandler)
+	subscriptionRepository := repository.NewsubscriptionRepository(gormDB)
+	subscriptionUseCase := usecase.NewSubscriptionUseCase(subscriptionRepository)
+	subscriptionHandler := handler.NewSubscriptionHandler(subscriptionUseCase)
+	serverHTTP := http.NewServerHTTP(userHandler, otpHandler, adminHandler, categoryHandler, videoHandler, subscriptionHandler)
 	return serverHTTP, nil
 }

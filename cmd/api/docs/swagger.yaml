@@ -377,7 +377,7 @@ paths:
         name: name
         required: true
         type: string
-      - description: Plan Duration (in months)
+      - description: Plan Duration (in days)
         in: query
         name: duration
         required: true
@@ -706,6 +706,42 @@ paths:
       summary: User Logout
       tags:
       - User
+  /users/plans/choose-plan:
+    post:
+      consumes:
+      - application/json
+      description: User can choose a subscription plan
+      parameters:
+      - description: creator ID
+        in: query
+        name: creator_id
+        required: true
+        type: integer
+      - description: Subscription plan ID
+        in: query
+        name: plan_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Choose Plan
+      tags:
+      - User
   /users/profile:
     get:
       consumes:
@@ -954,9 +990,9 @@ paths:
     get:
       description: Watch a specific video for a particular user
       parameters:
-      - description: User ID
+      - description: Creator ID
         in: query
-        name: userID
+        name: creatorID
         required: true
         type: integer
       - description: Video ID
@@ -1134,6 +1170,10 @@ paths:
         name: tags
         required: true
         type: array
+      - description: Exclusive Video
+        in: query
+        name: exclusive
+        type: boolean
       produces:
       - application/json
       responses:

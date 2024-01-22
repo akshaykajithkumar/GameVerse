@@ -34,7 +34,7 @@ func NewVideoUseCase(videoRepo interfaces.VideoRepository) services.VideoUseCase
 }
 
 // UploadVideo uploads a video file, encodes it, adds it to S3, and stores details in the database.
-func (uc *VideoUseCase) UploadVideo(userID int, categoryID int, title, description string, file *multipart.FileHeader, tags []string) error {
+func (uc *VideoUseCase) UploadVideo(userID int, categoryID int, title, description string, file *multipart.FileHeader, tags []string, exclusive bool) error {
 	// Encode video
 	videoData, err := helper.EncodeVideo(file)
 	if err != nil {
@@ -48,7 +48,7 @@ func (uc *VideoUseCase) UploadVideo(userID int, categoryID int, title, descripti
 	}
 
 	// Store video details in the database
-	videoID, err := uc.videoRepo.UploadVideo(userID, categoryID, title, description, videoURL, tags)
+	videoID, err := uc.videoRepo.UploadVideo(userID, categoryID, title, description, videoURL, tags, exclusive)
 	if err != nil {
 		return err
 	}
@@ -129,8 +129,26 @@ func (uc *VideoUseCase) DeleteVideo(videoID int) error {
 //			return "", errors.New("timed out waiting for video URL from Kafka")
 //		}
 //	}
-func (uc *VideoUseCase) WatchVideo(userID int, videoID int) (string, error) {
+func (uc *VideoUseCase) WatchVideo(userID, videoID, creatorID int) (string, error) {
+	// Check if the video is exclusive
+	isExclusive, err := uc.videoRepo.IsVideoExclusive(videoID)
+	if err != nil {
+		// Handle error if needed
+		return "", err
+	}
 
+	if isExclusive {
+		// Check if the user is subscribed to the creator
+		isSubscribed, err := uc.videoRepo.IsUserSubscribed(userID, creatorID)
+		if err != nil {
+			// Handle error if needed
+			return "", err
+		}
+
+		if !isSubscribed {
+			return "", errors.New("user is not subscribed to the creator")
+		}
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 

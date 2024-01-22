@@ -7,9 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func UserRoutes(engine *gin.RouterGroup, userHandler *handler.UserHandler, otpHandler *handler.OtpHandler, categoyHandler *handler.CategoryHandler, videohandler *handler.VideoHandler) {
+func UserRoutes(engine *gin.RouterGroup, userHandler *handler.UserHandler, otpHandler *handler.OtpHandler, categoyHandler *handler.CategoryHandler, videohandler *handler.VideoHandler, subscriptionhandler *handler.SubscriptionHandler) {
 	engine.POST("/login", userHandler.Login)
 	engine.POST("/signup", userHandler.SignUp)
+	engine.POST("/logout", userHandler.Logout)
 	engine.POST("/sendotp", otpHandler.SendOTP)
 	engine.POST("/verifyotp", otpHandler.VerifyOTP)
 	engine.POST("/forgotpassword", otpHandler.ForgotPassword)
@@ -21,6 +22,12 @@ func UserRoutes(engine *gin.RouterGroup, userHandler *handler.UserHandler, otpHa
 	engine.GET("/tags", videohandler.GetTagsForUserHandler)
 	engine.POST("/selectTags", videohandler.StoreUserTags)
 	engine.POST("/upload/video", videohandler.UploadVideo)
+	// payment := engine.Group("users/plans")
+
+	engine.POST("plans/choose-plan", subscriptionhandler.ChoosePlan)
+	engine.GET("plans/choose-plan/razorpay", subscriptionhandler.MakePaymentRazorPay)
+	engine.GET("plans/update_status", subscriptionhandler.VerifyPayment)
+
 	profile := engine.Group("/profile")
 	{
 		profile.GET("/videos", videohandler.ListVideos)
@@ -36,6 +43,6 @@ func UserRoutes(engine *gin.RouterGroup, userHandler *handler.UserHandler, otpHa
 		profile.GET("", userHandler.GetProfile) // Change the route from "/GetProfile" to "/profile"
 
 	}
-	profile.POST("/logout", userHandler.Logout)
+
 	engine.PATCH("/changepassword", userHandler.ChangePassword)
 }
