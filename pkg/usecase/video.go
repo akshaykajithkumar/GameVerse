@@ -9,6 +9,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	conf "main/pkg/config"
 	"main/pkg/domain"
 	"main/pkg/helper"
 	"main/pkg/helper/kafka"
@@ -24,6 +25,7 @@ import (
 // UseCase is a struct representing the video use case.
 type VideoUseCase struct {
 	videoRepo interfaces.VideoRepository
+	conf      conf.Config
 }
 
 // NewVideoUseCase creates a new instance of the video use case.
@@ -42,7 +44,7 @@ func (uc *VideoUseCase) UploadVideo(userID int, categoryID int, title, descripti
 	}
 
 	// Upload video to S3
-	videoURL, err := helper.AddVideoToS3(videoData)
+	videoURL, err := helper.AddVideoToS3(videoData, uc.conf)
 	if err != nil {
 		return err
 	}

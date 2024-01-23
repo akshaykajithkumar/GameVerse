@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	conf "main/pkg/config"
 	"main/pkg/domain"
 	"main/pkg/utils/models"
 	"mime/multipart"
@@ -313,10 +314,10 @@ func TwilioVerifyOTP(serviceID string, code string, phone string) error {
 
 }
 
-func AddImageToS3(file *multipart.FileHeader) (string, error) {
+func AddImageToS3(file *multipart.FileHeader, cf conf.Config) (string, error) {
 	// Set AWS credentials using environment variables
-	os.Setenv("AWS_ACCESS_KEY_ID", "AKIAX2D5JXBMLEOAGJOW")
-	os.Setenv("AWS_SECRET_ACCESS_KEY", "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")
+	os.Setenv("AWS_ACCESS_KEY_ID", cf.AWSACCESSKEYID)
+	os.Setenv("AWS_SECRET_ACCESS_KEY", cf.AWSSECRETACCESSKEY)
 
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("ap-south-1"))
 	if err != nil {
@@ -349,12 +350,13 @@ func AddImageToS3(file *multipart.FileHeader) (string, error) {
 
 	return result.Location, nil
 }
-func AddVideoToS3(videoContent []byte) (string, error) {
+func AddVideoToS3(videoContent []byte, cf conf.Config) (string, error) {
 	// Set AWS credentials using environment variables
 	// os.Setenv("AWS_ACCESS_KEY_ID", "AKIAX2D5JXBMLEOAGJOW")
 	// os.Setenv("AWS_SECRET_ACCESS_KEY", "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")
-	os.Setenv("AWS_ACCESS_KEY_ID", "AKIAZI2LCLGYWQDDZ7NM")
-	os.Setenv("AWS_SECRET_ACCESS_KEY", "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")
+
+	os.Setenv("AWS_ACCESS_KEY_ID", cf.AWSACCESSKEYID)
+	os.Setenv("AWS_SECRET_ACCESS_KEY", cf.AWSSECRETACCESSKEY)
 	//AKIAZI2LCLGYWQDDZ7NM - new accesskey
 	//D1AvT5GTvraF+oT34iLDjqXx1Nr0SiZ48hgMWb8A  -new  secretacceskey
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("ap-south-1"))
@@ -371,7 +373,7 @@ func AddVideoToS3(videoContent []byte) (string, error) {
 	uploader := manager.NewUploader(client)
 
 	result, uploadErr := uploader.Upload(context.TODO(), &s3.PutObjectInput{
-		Bucket: aws.String("bucketforgameverse1"),
+		Bucket: aws.String("bucketforgameverse"),
 		Key:    aws.String(fileName),
 		Body:   bytes.NewReader(videoContent),
 	})

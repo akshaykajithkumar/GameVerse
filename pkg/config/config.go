@@ -8,18 +8,20 @@ import (
 )
 
 type Config struct {
-	DBHost     string `mapstructure:"DB_HOST"`
-	DBName     string `mapstructure:"DB_NAME"`
-	DBUser     string `mapstructure:"DB_USER"`
-	DBPort     string `mapstructure:"DB_PORT"`
-	DBPassword string `mapstructure:"DB_PASSWORD"`
-	ACCOUNTSID string `mapstructure:"ACCOUNTSID"`
-	SERVICESID string `mapstructure:"SERVICESID"`
-	AUTHTOKEN  string `mapstructure:"AUTHTOKEN"`
+	DBHost             string `mapstructure:"DB_HOST"`
+	DBName             string `mapstructure:"DB_NAME"`
+	DBUser             string `mapstructure:"DB_USER"`
+	DBPort             string `mapstructure:"DB_PORT"`
+	DBPassword         string `mapstructure:"DB_PASSWORD"`
+	ACCOUNTSID         string `mapstructure:"ACCOUNTSID"`
+	SERVICESID         string `mapstructure:"SERVICESID"`
+	AUTHTOKEN          string `mapstructure:"AUTHTOKEN"`
+	AWSACCESSKEYID     string `mapstructure:"AWSACCESSKEYID"`
+	AWSSECRETACCESSKEY string `mapstructure:"AWSSECRETACCESSKEY "`
 }
 
 var envs = []string{
-	"DB_HOST", "DB_NAME", "DB_USER", "DB_PORT", "DB_PASSWORD", "ACCOUNTS_ID", "SERVICES_ID", "AUTH_TOKEN",
+	"DB_HOST", "DB_NAME", "DB_USER", "DB_PORT", "DB_PASSWORD", "ACCOUNTS_ID", "SERVICES_ID", "AUTH_TOKEN", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY",
 }
 
 func LoadConfig() (Config, error) {

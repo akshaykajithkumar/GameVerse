@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"errors"
+	conf "main/pkg/config"
 	"main/pkg/helper"
 	interfaces "main/pkg/repository/interface"
 	services "main/pkg/usecase/interface"
@@ -13,6 +14,7 @@ import (
 
 type userUseCase struct {
 	userRepo interfaces.UserRepository
+	config   conf.Config
 }
 
 func NewUserUseCase(repo interfaces.UserRepository) services.UserUseCase {
@@ -129,7 +131,7 @@ func (u *userUseCase) EditProfile(id int, name, email, username, phone, bio stri
 	if len(bio) > maxBioLength {
 		return errors.New("bio length exceeds the limit")
 	}
-	url, err := helper.AddImageToS3(image)
+	url, err := helper.AddImageToS3(image, u.config)
 	if err != nil {
 		return err
 	}
