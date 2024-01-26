@@ -20,7 +20,7 @@ func main() {
 	docs.SwaggerInfo.Version = "1.0"
 
 	//docs.SwaggerInfo.Host = "localhost:1245"
-
+	docs.SwaggerInfo.Host = "gameverse.cloud"
 	docs.SwaggerInfo.BasePath = ""
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
