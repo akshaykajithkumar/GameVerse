@@ -354,9 +354,10 @@ func AddVideoToS3(videoContent []byte, cf conf.Config) (string, error) {
 	// Set AWS credentials using environment variables
 	// os.Setenv("AWS_ACCESS_KEY_ID", "AKIAX2D5JXBMLEOAGJOW")
 	// os.Setenv("AWS_SECRET_ACCESS_KEY", "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")
-
-	os.Setenv("AWS_ACCESS_KEY_ID", cf.AWSACCESSKEYID)
-	os.Setenv("AWS_SECRET_ACCESS_KEY", cf.AWSSECRETACCESSKEY)
+	fmt.Println("keysss :", viper.GetString("AWSACCESSKEYID"))
+	fmt.Println("awskeys:", cf.AWSACCESSKEYID, " ", cf.AWSSECRETACCESSKEY)
+	os.Setenv("AWS_ACCESS_KEY_ID", viper.GetString("AWSACCESSKEYID"))
+	os.Setenv("AWS_SECRET_ACCESS_KEY", viper.GetString("AWSSECRETACCESSKEY"))
 	//AKIAZI2LCLGYWQDDZ7NM - new accesskey
 	//D1AvT5GTvraF+oT34iLDjqXx1Nr0SiZ48hgMWb8A  -new  secretacceskey
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("ap-south-1"))

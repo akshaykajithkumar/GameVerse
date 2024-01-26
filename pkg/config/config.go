@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/joho/godotenv"
@@ -21,7 +22,7 @@ type Config struct {
 }
 
 var envs = []string{
-	"DB_HOST", "DB_NAME", "DB_USER", "DB_PORT", "DB_PASSWORD", "ACCOUNTS_ID", "SERVICES_ID", "AUTH_TOKEN", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY",
+	"DB_HOST", "DB_NAME", "DB_USER", "DB_PORT", "DB_PASSWORD", "ACCOUNTS_ID", "SERVICES_ID", "AUTH_TOKEN", "AWSACCESSKEY_ID", "AWSSECRETACCESS_KEY",
 }
 
 func LoadConfig() (Config, error) {
@@ -52,5 +53,7 @@ func LoadConfig() (Config, error) {
 		return config, err
 	}
 
+	fmt.Println("Loaded AWS Access Key:", config.AWSACCESSKEYID)
+	fmt.Println("Loaded AWS Secret Access Key:", config.AWSSECRETACCESSKEY)
 	return config, nil
 }
