@@ -57,8 +57,8 @@ func (i *subscriptionUseCase) PurchasePlan(planID int, creatorID int, userID int
 		return "", err
 	}
 
-	link := fmt.Sprintf("http://localhost:1245/users/plans/choose-plan/razorpay?subscription_list_id=%d", subscriptionListID)
-
+	//link := fmt.Sprintf("http://localhost:1245/users/plans/choose-plan/razorpay?subscription_list_id=%d", subscriptionListID)
+	link := fmt.Sprintf("https://gameverse.cloud/users/plans/choose-plan/razorpay?subscription_list_id=%d", subscriptionListID)
 	return link, nil
 }
 
