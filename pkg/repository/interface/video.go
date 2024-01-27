@@ -27,4 +27,5 @@ type VideoRepository interface {
 	GetVideoTagsByVideoID(videoID uint) ([]string, error)
 	IsUserSubscribed(userID int, creatorID int) (bool, error)
 	IsVideoExclusive(videoID int) (bool, error)
+	ListtVideos(page, limit int, sort, order, search string) ([]models.Video, error)
 }

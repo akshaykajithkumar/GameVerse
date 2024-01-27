@@ -170,4 +170,42 @@ func (p *SubscriptionRepository) UpdatePaymentDetails(orderID, paymentID, razorI
 
 //		return nil
 //	}
-//
+func (r *SubscriptionRepository) GetRevenue(creatorID int, startDate string, endDate string) (float64, error) {
+	var revenue float64
+
+	query := r.DB.
+		Model(&domain.SubscriptionList{}).
+		Select("COALESCE(SUM(subscription_plans.price), 0)").
+		Joins("JOIN subscription_plans ON subscription_lists.plan_id = subscription_plans.id").
+		Where("subscription_lists.creator_id = ?", creatorID)
+
+	if startDate != "" && endDate != "" {
+		query = query.Where("subscription_lists.subscribed_at BETWEEN ? AND ?", startDate, endDate)
+	}
+
+	result := query.Scan(&revenue)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+
+	return revenue, nil
+}
+func (r *SubscriptionRepository) GetSubscribersCount(creatorID int, startDate string, endDate string) (int, error) {
+	var count int
+
+	query := "SELECT COUNT(id) FROM subscription_lists WHERE creator_id = ?"
+	args := []interface{}{creatorID}
+
+	// Check if start and end date are provided
+	if startDate != "" && endDate != "" {
+		query += " AND subscribed_at BETWEEN ? AND ?"
+		args = append(args, startDate, endDate)
+	}
+
+	result := r.DB.Raw(query, args...).Scan(&count)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+
+	return count, nil
+}

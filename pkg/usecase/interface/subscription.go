@@ -6,5 +6,6 @@ type SubscriptionUseCase interface {
 	PurchasePlan(planID int, creatorID int, userID int) (string, error)
 	MakePaymentRazorPay(planID string, userID int) (models.OrderPaymentDetails, error)
 	VerifyPayment(paymentID string, razorID string, orderID string) error
+	GetAnalytics(userID int, startDate string, endDate string) (models.AnalyticsData, error)
 	// StartSubscriptionUpdateJob()
 }

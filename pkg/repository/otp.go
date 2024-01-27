@@ -59,3 +59,14 @@ func (ot *otpRepository) UpdateUserPermissionByPhone(phone string) error {
 
 	return nil
 }
+func (ot *otpRepository) ChangePasswordByPhone(phone string, newPassword string) error {
+	//a raw SQL query to update the password based on the phone number
+	err := ot.DB.Exec("UPDATE users SET password=? WHERE phone=?", newPassword, phone).Error
+	if err != nil {
+		// If an error occurs during the update, return the error
+		return err
+	}
+
+	// Return nil if the update is successful
+	return nil
+}

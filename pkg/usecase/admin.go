@@ -128,3 +128,16 @@ func (u *adminUseCase) GetSubscriptionPlans() ([]domain.SubscriptionPlan, error)
 	// Return the list of subscription plans
 	return plans, nil
 }
+func (u *adminUseCase) GetUserReports(userId, page, limit int) ([]domain.Reports, int64, error) {
+	reports, err := u.adminRepository.GetUserReports(userId, page, limit)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	count, err := u.adminRepository.GetUserReportsCount(userId)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return reports, count, nil
+}

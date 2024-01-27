@@ -3,6 +3,7 @@ package usecase
 import (
 	"errors"
 	conf "main/pkg/config"
+	"main/pkg/domain"
 	"main/pkg/helper"
 	interfaces "main/pkg/repository/interface"
 	services "main/pkg/usecase/interface"
@@ -180,4 +181,83 @@ func (u *userUseCase) ReportUser(reporterID, targetID int, reason string) error 
 	}
 
 	return nil
+}
+
+// ToggleFollow toggles the follow status between two users
+func (u *userUseCase) ToggleFollow(followerID, followingID int) error {
+	// Additional validation if needed
+
+	// Check if the users are trying to follow/unfollow themselves
+	if followerID == followingID {
+		return errors.New("cannot follow/unfollow yourself")
+	}
+
+	// Check if the follow relationship already exists
+	exists, err := u.userRepo.CheckFollowRelationship(followerID, followingID)
+	if err != nil {
+		return err
+	}
+
+	// Toggle follow status based on the existence of the relationship
+	if exists {
+		// Relationship exists, remove the follow
+		if err := u.userRepo.RemoveFollow(followerID, followingID); err != nil {
+			return err
+		}
+	} else {
+		// Relationship doesn't exist, add the follow
+		if err := u.userRepo.StoreFollow(followerID, followingID); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// GetFollowingListWithPagination retrieves the paginated list of users (ID and username) that a given user is following
+func (uc *userUseCase) GetFollowingListWithPagination(userID int, page, limit int) ([]models.FollowingUser, error) {
+	// Additional validation if needed
+
+	// Call the user repository to get the following list with pagination
+	followingList, err := uc.userRepo.GetFollowingListWithPagination(userID, page, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	return followingList, nil
+}
+
+// SearchUsersByNameWithPagination returns a paginated list of users matching the search term in alphabetical order
+func (uc *userUseCase) SearchUsersByNameWithPagination(searchTerm string, page, limit int) ([]domain.User, error) {
+	// Additional validation if needed
+
+	// Call the user repository to search for users by name with pagination
+	searchResults, err := uc.userRepo.SearchUsersByNameWithPagination(searchTerm, page, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	return searchResults, nil
+}
+func (u *userUseCase) GetSubscriptionPlans() ([]domain.SubscriptionPlan, error) {
+	// Call the repository function to fetch the list of subscription plans
+	plans, err := u.userRepo.GetSubscriptionPlans()
+	if err != nil {
+		// Handle any error from the repository, you can log or perform additional actions as needed
+		return nil, err
+	}
+
+	// Return the list of subscription plans
+	return plans, nil
+}
+func (uc *userUseCase) GetFollowersListWithPagination(userID int, page, limit int) ([]models.FollowerUser, error) {
+	// Additional validation if needed
+
+	// Call the user repository to get the followers list with pagination
+	followersList, err := uc.userRepo.GetFollowersListWithPagination(userID, page, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	return followersList, nil
 }

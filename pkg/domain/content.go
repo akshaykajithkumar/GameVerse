@@ -42,16 +42,17 @@ func (t *Tags) Scan(value interface{}) error {
 // Video struct with a custom scanner for the tags column
 
 type Video struct {
-	ID          uint     `json:"id" gorm:"unique;not null"`
-	UserID      uint     `json:"user_id" gorm:"not null"`
-	Title       string   `json:"title"`
-	Description string   `json:"description"`
-	URL         string   `json:"url"`
-	CategoryID  int      `json:"category_id"`
-	Category    Category `json:"category" gorm:"foreignkey:CategoryID;constraint:OnDelete:CASCADE"`
-	Likes       int      `json:"likes" gorm:"default:0"`
-	Views       int      `json:"views" gorm:"default:0"`
-	Exclusive   bool     `json:"exclusive" gorm:"default:false"`
+	ID          uint      `json:"id" gorm:"unique;not null"`
+	UserID      uint      `json:"user_id" gorm:"not null"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	URL         string    `json:"url"`
+	CategoryID  int       `json:"category_id"`
+	Category    Category  `json:"category" gorm:"foreignkey:CategoryID;constraint:OnDelete:CASCADE"`
+	Likes       int       `json:"likes" gorm:"default:0"`
+	Views       int       `json:"views" gorm:"default:0"`
+	Exclusive   bool      `json:"exclusive" gorm:"default:false"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
 type VideoLikes struct {

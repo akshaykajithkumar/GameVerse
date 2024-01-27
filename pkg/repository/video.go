@@ -5,6 +5,7 @@ import (
 	"main/pkg/domain"
 	interfaces "main/pkg/repository/interface"
 	"main/pkg/utils/models"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -67,6 +68,7 @@ func (vr *VideoRepository) UploadVideo(userID int, categoryID int, title, descri
 		Description: description,
 		URL:         url,
 		Exclusive:   exclusive,
+		CreatedAt:   time.Now(), // Set the creation time to the current time
 	}
 
 	if err := vr.DB.Create(&video).Error; err != nil {
@@ -352,4 +354,37 @@ func (vr *VideoRepository) IsUserSubscribed(userID int, creatorID int) (bool, er
 
 	// If the count is greater than 0, the user is subscribed; otherwise, the user is not subscribed
 	return count > 0, nil
+}
+
+// ListVideos is a repository method for searching and listing videos with sorting and pagination.
+func (vr *VideoRepository) ListtVideos(page, limit int, sort, order, search string) ([]models.Video, error) {
+	var videos []models.Video
+
+	// Calculate offset based on page and limit
+	offset := (page - 1) * limit
+
+	// Query the database with sorting and pagination
+	query := vr.DB
+
+	if search != "" {
+		query = query.Where("title LIKE ?", "%"+search+"%")
+	}
+
+	switch sort {
+	case "views":
+		query = query.Order("views " + order)
+	case "likes":
+		query = query.Order("likes " + order)
+	case "created_at":
+		query = query.Order("created_at " + order)
+	default:
+		// Default sorting by title in ascending order
+		query = query.Order("title ASC")
+	}
+
+	if err := query.Offset(offset).Limit(limit).Find(&videos).Error; err != nil {
+		return nil, err
+	}
+
+	return videos, nil
 }

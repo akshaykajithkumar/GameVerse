@@ -7,3 +7,8 @@ type OrderPaymentDetails struct {
 	OrderID    int     `json:"order_id"`
 	FinalPrice float64 `json:"final_price"`
 }
+type AnalyticsData struct {
+	SubscribersCount int     `json:"subscribers_count"`
+	Revenue          float64 `json:"revenue"`
+	// Add more fields as needed
+}

@@ -532,3 +532,16 @@ func sortVideoIDsByScore(videos []domain.Video, scores map[uint]int) []uint {
 
 	return videoIDs
 }
+
+// ListVideos is a use case for searching and listing videos with sorting and pagination.
+func (uc *VideoUseCase) ListtVideos(page, limit int, sort, order, search string) ([]models.Video, error) {
+	// Call the repository to get the paginated and sorted list of videos
+	videos, err := uc.videoRepo.ListtVideos(page, limit, sort, order, search)
+	if err != nil {
+		return nil, err
+	}
+
+	// If needed, you can perform additional business logic or filtering on the videos here
+
+	return videos, nil
+}

@@ -92,3 +92,11 @@ type EditUserProfileResponse struct {
 	Phone    string `gorm:"unique" json:"phone"`
 	Bio      string `json:"bio"`
 }
+type FollowingUser struct {
+	ID       int    `json:"id"`
+	Username string `json:"username"`
+}
+type FollowerUser struct {
+	ID       int    `json:"id"`
+	Username string `json:"username"`
+}

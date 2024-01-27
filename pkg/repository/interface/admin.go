@@ -14,4 +14,6 @@ type AdminRepository interface {
 	AddSubscriptionPlan(name string, duration int, price float64) error
 	DeleteSubscriptionPlan(planID int) error
 	GetSubscriptionPlans() ([]domain.SubscriptionPlan, error)
+	GetUserReports(userId, page, limit int) ([]domain.Reports, error)
+	GetUserReportsCount(userId int) (int64, error)
 }

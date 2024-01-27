@@ -646,3 +646,60 @@ func parsePaginationParams(c *gin.Context) (int, int) {
 
 	return page, limit
 }
+
+// ListVideos is a handler for searching and listing videos with sorting and pagination.
+// @Summary      List/Search Videos
+// @Description  List/Search videos with sorting and pagination
+// @Tags         User
+// @Security     Bearer
+// @Param        limit   query   int     false   "Limit per page"
+// @Param        page    query   int     false   "Page number"
+// @Param        sort    query   string  false   "Sort order (upload_time, views, likes)"
+// @Param        order   query   string  false   "Order (asc, desc)"
+// @Param        search  query   string  false   "Search term"
+// @Success      200  {object} response.Response{}
+// @Failure      400  {object} response.Response{}
+// @Router       /users/videos [get]
+func (u *VideoHandler) ListtVideos(c *gin.Context) {
+	// Parse query parameters
+	limit, page, sort, order, search := parseListVideosQueryParams(c)
+
+	// Call the use case to search and list videos with sorting and pagination
+	videos, err := u.VideoUseCase.ListtVideos(page, limit, sort, order, search)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not list videos", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	// Customize the response based on your needs
+	successRes := response.ClientResponse(http.StatusOK, "Successfully listed videos", videos, nil)
+	c.JSON(http.StatusOK, successRes)
+}
+
+// parseListVideosQueryParams parses and validates query parameters for ListVideos
+func parseListVideosQueryParams(c *gin.Context) (int, int, string, string, string) {
+	// Default values
+	limit := 10
+	page := 1
+	sort := ""
+	order := "asc"
+	search := ""
+
+	// Parse limit and page parameters from the query
+	limitStr := c.Query("limit")
+	pageStr := c.Query("page")
+	sort = c.Query("sort")
+	order = c.Query("order")
+	search = c.Query("search")
+
+	if limitStr != "" {
+		limit, _ = strconv.Atoi(limitStr)
+	}
+
+	if pageStr != "" {
+		page, _ = strconv.Atoi(pageStr)
+	}
+
+	return limit, page, sort, order, search
+}

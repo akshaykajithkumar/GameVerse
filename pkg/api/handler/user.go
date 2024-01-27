@@ -266,3 +266,217 @@ func (u *UserHandler) ReportUser(c *gin.Context) {
 	successRes := response.ClientResponse(http.StatusOK, "Successfully submitted the report", nil, nil)
 	c.JSON(http.StatusOK, successRes)
 }
+
+// @Summary		Toggle Follow
+// @Description	Toggle the follow status between two users
+// @Tags			User
+// @Accept		json
+// @Produce		json
+// @Param			followingUserID	query	int	true	"ID of the user being followed/unfollowed"
+// @Security		Bearer
+// @Success		200	{object}	response.Response{}
+// @Failure		400	{object}	response.Response{}
+// @Router			/users/search/toggleFollow [post]
+func (u *UserHandler) ToggleFollow(c *gin.Context) {
+	// Get the follower's user ID from the token
+	followerID, err := helper.GetUserID(c)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not get follower's userID", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	// Get the following user's ID from the request
+	followingID, err := strconv.Atoi(c.Query("followingUserID"))
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Invalid followingUserID", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	// Call the user use case to handle the follow/unfollow logic
+	if err := u.userUseCase.ToggleFollow(followerID, followingID); err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not toggle follow status", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	// Toggle successful
+	successRes := response.ClientResponse(http.StatusOK, "Toggle follow status successful", nil, nil)
+	c.JSON(http.StatusOK, successRes)
+}
+
+// @Summary	Get Following List with Pagination
+// @Description	Get the paginated list of users (ID and username) that the logged-in user is following
+// @Tags			User
+// @Accept		json
+// @Produce		json
+// @Security		Bearer
+// @Param			page	query	int	true	"Page number"
+// @Param			limit	query	int	true	"Limit per page"
+// @Success		200		{object}	[]models.FollowingUser
+// @Failure		400		{object}	response.Response{}
+// @Router			/users/followingList [get]
+func (u *UserHandler) GetFollowingList(c *gin.Context) {
+	// Get the user ID from the token
+	userID, err := helper.GetUserID(c)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not get user ID", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	// Get the page and limit from the query parameters
+	pageStr := c.Query("page")
+	page, err := strconv.Atoi(pageStr)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Page number not in the right format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	limitStr := c.Query("limit")
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Limit not in the right format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	// Call the user use case to get the following list with pagination
+	followingList, err := u.userUseCase.GetFollowingListWithPagination(userID, page, limit)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not get following list", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	// Return the following list
+	c.JSON(http.StatusOK, followingList)
+}
+
+// @Summary	Search Users by Name
+// @Description	Search for users by name and return the results in alphabetical order with pagination
+// @Tags		User
+// @Accept	json
+// @Produce	json
+// @Security	Bearer
+// @Param		searchTerm	query	string	true	"Search term for user name"
+// @Param		page	query	int	true	"Page number"
+// @Param		limit	query	int	true	"Limit per page"
+// @Success	200	{object}	[]map[string]interface{}
+// @Failure	400	{object}	response.Response{}
+// @Router	/users/search [get]
+func (u *UserHandler) SearchUsers(c *gin.Context) {
+	// Get the search term, page, and limit from the query parameters
+	searchTerm := c.Query("searchTerm")
+	if searchTerm == "" {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Search term cannot be empty", nil, nil)
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	pageStr := c.Query("page")
+	page, err := strconv.Atoi(pageStr)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Page number not in the right format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	limitStr := c.Query("limit")
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Limit not in the right format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	// Call the user use case to search for users by name with pagination
+	searchResults, err := u.userUseCase.SearchUsersByNameWithPagination(searchTerm, page, limit)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not search for users", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+	simplifiedResults := make([]map[string]interface{}, len(searchResults))
+	for i, user := range searchResults {
+		simplifiedResults[i] = map[string]interface{}{
+			"ID":       user.ID,
+			"username": user.Username,
+		}
+	}
+	// Return the search results
+	c.JSON(http.StatusOK, simplifiedResults)
+}
+
+// @Summary	Get List of Subscription Plans
+// @Description	using this handler users can get the list of subscription plans
+// @Tags			User
+// @Accept			json
+// @Produce		json
+// @Security		Bearer
+// @Success		200	{object}	[]domain.SubscriptionPlan
+// @Failure		400	{object}	response.Response{}
+// @Router			/users/plans [get]
+func (ad *UserHandler) GetSubscriptionPlans(c *gin.Context) {
+	plans, err := ad.userUseCase.GetSubscriptionPlans()
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "could not fetch subscription plans", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	// Return the list of subscription plans in the response
+	c.JSON(http.StatusOK, plans)
+}
+
+// GetFollowersList retrieves the paginated list of users (ID and username) that the logged-in user's followers
+// @Summary	Get Followers List with Pagination
+// @Description	Get the paginated list of users (ID and username) that the logged-in user's followers
+// @Tags			User
+// @Accept		json
+// @Produce		json
+// @Security		Bearer
+// @Param			page	query	int	true	"Page number"
+// @Param			limit	query	int	true	"Limit per page"
+// @Success		200		{object}	[]models.FollowerUser
+// @Failure		400		{object}	response.Response{}
+// @Router			/users/followersList [get]
+func (u *UserHandler) GetFollowersList(c *gin.Context) {
+	// Get the user ID from the token
+	userID, err := helper.GetUserID(c)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not get user ID", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	// Get the page and limit from the query parameters
+	pageStr := c.Query("page")
+	page, err := strconv.Atoi(pageStr)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Page number not in the right format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	limitStr := c.Query("limit")
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Limit not in the right format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	// Call the user use case to get the followers list with pagination
+	followersList, err := u.userUseCase.GetFollowersListWithPagination(userID, page, limit)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not get followers list", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	// Return the followers list
+	c.JSON(http.StatusOK, followersList)
+}

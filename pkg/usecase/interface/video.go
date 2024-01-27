@@ -21,4 +21,5 @@ type VideoUseCase interface {
 	StoreUserTags(userID int, tagIDs []uint) error
 	// RecommendationList(userID int) ([]models.RecommendationListResponse, error)
 	RecommendationList(userID int, page, limit int) ([]models.RecommendationListResponse, error)
+	ListtVideos(page, limit int, sort, order, search string) ([]models.Video, error)
 }

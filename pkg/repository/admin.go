@@ -126,3 +126,23 @@ func (ar *adminRepository) GetSubscriptionPlans() ([]domain.SubscriptionPlan, er
 	// Return the list of subscription plans
 	return plans, nil
 }
+
+func (i *adminRepository) GetUserReports(target_id, page, limit int) ([]domain.Reports, error) {
+	var reports []domain.Reports
+	offset := (page - 1) * limit
+
+	if err := i.DB.Where("target_id  = ?", target_id).Offset(offset).Limit(limit).Find(&reports).Error; err != nil {
+		return nil, err
+	}
+
+	return reports, nil
+}
+
+func (i *adminRepository) GetUserReportsCount(target_id int) (int64, error) {
+	var count int64
+	if err := i.DB.Model(&domain.Reports{}).Where("target_id  = ?", target_id).Count(&count).Error; err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}

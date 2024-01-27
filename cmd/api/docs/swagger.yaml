@@ -21,6 +21,13 @@ definitions:
     required:
     - email
     type: object
+  models.AnalyticsData:
+    properties:
+      revenue:
+        type: number
+      subscribers_count:
+        type: integer
+    type: object
   models.ChangePassword:
     properties:
       old_password:
@@ -52,6 +59,20 @@ definitions:
     required:
     - description
     - title
+    type: object
+  models.FollowerUser:
+    properties:
+      id:
+        type: integer
+      username:
+        type: string
+    type: object
+  models.FollowingUser:
+    properties:
+      id:
+        type: integer
+      username:
+        type: string
     type: object
   models.ForgotPasswordData:
     properties:
@@ -477,6 +498,40 @@ paths:
       summary: Get Tags
       tags:
       - Admin
+  /admin/userReports:
+    get:
+      consumes:
+      - application/json
+      description: Get a paginated list of user reports and count
+      parameters:
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Number of items per page (default: 10)'
+        in: query
+        name: limit
+        type: integer
+      - description: User ID for which reports are requested
+        in: query
+        name: userId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Get Reports List
+      tags:
+      - Admin
   /admin/users/getusers:
     get:
       consumes:
@@ -536,6 +591,45 @@ paths:
       summary: Block or unblock User
       tags:
       - Admin
+  /users/analytics:
+    get:
+      consumes:
+      - application/json
+      description: Get analytics data for subscribers count, revenue, and more
+      parameters:
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: start_date
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: end_date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.AnalyticsData'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Get Analytics
+      tags:
+      - User
   /users/category:
     get:
       consumes:
@@ -633,6 +727,76 @@ paths:
       summary: Change Password
       tags:
       - User
+  /users/followersList:
+    get:
+      consumes:
+      - application/json
+      description: Get the paginated list of users (ID and username) that the logged-in
+        user's followers
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Limit per page
+        in: query
+        name: limit
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.FollowerUser'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Get Followers List with Pagination
+      tags:
+      - User
+  /users/followingList:
+    get:
+      consumes:
+      - application/json
+      description: Get the paginated list of users (ID and username) that the logged-in
+        user is following
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Limit per page
+        in: query
+        name: limit
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.FollowingUser'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Get Following List with Pagination
+      tags:
+      - User
   /users/forgotpassword:
     post:
       consumes:
@@ -704,6 +868,29 @@ paths:
       security:
       - Bearer: []
       summary: User Logout
+      tags:
+      - User
+  /users/plans:
+    get:
+      consumes:
+      - application/json
+      description: using this handler users can get the list of subscription plans
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.SubscriptionPlan'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Get List of Subscription Plans
       tags:
       - User
   /users/plans/choose-plan:
@@ -1046,6 +1233,74 @@ paths:
       summary: Report User
       tags:
       - User
+  /users/search:
+    get:
+      consumes:
+      - application/json
+      description: Search for users by name and return the results in alphabetical
+        order with pagination
+      parameters:
+      - description: Search term for user name
+        in: query
+        name: searchTerm
+        required: true
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Limit per page
+        in: query
+        name: limit
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Search Users by Name
+      tags:
+      - User
+  /users/search/toggleFollow:
+    post:
+      consumes:
+      - application/json
+      description: Toggle the follow status between two users
+      parameters:
+      - description: ID of the user being followed/unfollowed
+        in: query
+        name: followingUserID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Toggle Follow
+      tags:
+      - User
   /users/selectTags:
     post:
       description: Store multiple tags for a specific user
@@ -1214,6 +1469,44 @@ paths:
           schema:
             $ref: '#/definitions/response.Response'
       summary: Verify OTP
+      tags:
+      - User
+  /users/videos:
+    get:
+      description: List/Search videos with sorting and pagination
+      parameters:
+      - description: Limit per page
+        in: query
+        name: limit
+        type: integer
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Sort order (upload_time, views, likes)
+        in: query
+        name: sort
+        type: string
+      - description: Order (asc, desc)
+        in: query
+        name: order
+        type: string
+      - description: Search term
+        in: query
+        name: search
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: List/Search Videos
       tags:
       - User
 swagger: "2.0"

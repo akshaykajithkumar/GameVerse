@@ -8,6 +8,8 @@ type SubscriptionRepository interface {
 	FindPrice(orderID int) (float64, error)
 	UpdatePaymentDetails(orderID, paymentID, razorID string) error
 	GetActiveSubscription(creatorID, userID int) (*domain.SubscriptionList, error)
+	GetRevenue(creatorID int, startDate string, endDate string) (float64, error)
+	GetSubscribersCount(creatorID int, startDate string, endDate string) (int, error)
 
 	// FetchActiveSubscriptions() ([]domain.SubscriptionList, error)
 	// UpdateSubscriptionInDatabase(subscription domain.SubscriptionList) error

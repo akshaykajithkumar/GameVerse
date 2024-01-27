@@ -15,4 +15,11 @@ type UserRepository interface {
 	EditProfile(id int, name, email, username, phone, bio string, url string) error
 	GetProfileDetailsById(id int) (*domain.User, error)
 	StoreReport(reporterID, targetID int, reason string) error
+	CheckFollowRelationship(followerID, followingID int) (bool, error)
+	StoreFollow(followerID, followingID int) error
+	RemoveFollow(followerID, followingID int) error
+	SearchUsersByNameWithPagination(searchTerm string, page, limit int) ([]domain.User, error)
+	GetFollowingListWithPagination(userID int, page, limit int) ([]models.FollowingUser, error)
+	GetSubscriptionPlans() ([]domain.SubscriptionPlan, error)
+	GetFollowersListWithPagination(userID int, page, limit int) ([]models.FollowerUser, error)
 }

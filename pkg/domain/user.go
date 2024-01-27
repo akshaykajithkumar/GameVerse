@@ -26,3 +26,12 @@ type UserTags struct {
 	TagID  uint `json:"tag_id" gorm:"not null"`
 	Tag    Tag  `json:"-" gorm:"foreignKey:TagID;constraint:OnDelete:CASCADE"`
 }
+
+// Follow struct represents a user following another user
+type Follow struct {
+	ID          uint `json:"id" gorm:"primaryKey"`
+	FollowerID  int  `json:"follower_id"`
+	FollowingID int  `json:"following_id"`
+}
+
+// You can include additional fields if needed, such as timestamps.

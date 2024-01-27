@@ -132,6 +132,29 @@ func (p *subscriptionUseCase) VerifyPayment(paymentID string, razorID string, or
 // 	// Start the scheduler
 // 	c.Start()
 
-// 	// Block the main goroutine to keep the application running
-// 	select {}
-// }
+//		// Block the main goroutine to keep the application running
+//		select {}
+//	}
+
+func (u *subscriptionUseCase) GetAnalytics(userID int, startDate string, endDate string) (models.AnalyticsData, error) {
+	//Fetch subscribers count for the given date range
+	subscribersCount, err := u.repository.GetSubscribersCount(userID, startDate, endDate)
+	if err != nil {
+		return models.AnalyticsData{}, err
+	}
+
+	// Fetch revenue for the given date range
+	revenue, err := u.repository.GetRevenue(userID, startDate, endDate)
+	if err != nil {
+		return models.AnalyticsData{}, err
+	}
+
+	// Create and return the analytics data
+	analyticsData := models.AnalyticsData{
+		SubscribersCount: subscribersCount,
+		Revenue:          revenue,
+		// Add more fields if needed
+	}
+
+	return analyticsData, nil
+}

@@ -141,3 +141,44 @@ func (s *SubscriptionHandler) VerifyPayment(c *gin.Context) {
 // }
 
 // HandleActivationJob handles the job triggered by the cron job
+
+// @Summary Get Analytics
+// @Description Get analytics data for subscribers count, revenue, and more
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param start_date query string false "Start date (YYYY-MM-DD)"
+// @Param end_date query string false "End date (YYYY-MM-DD)"
+// @Security Bearer
+// @Success 200 {object} response.Response{data=models.AnalyticsData}
+// @Failure 400 {object} response.Response{}
+// @Failure 500 {object} response.Response{}
+// @Router /users/analytics [get]
+func (s *SubscriptionHandler) GetAnalytics(c *gin.Context) {
+	userID, err := helper.GetUserID(c)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not get userID", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	startDate := c.Query("start_date")
+	endDate := c.Query("end_date")
+
+	// Get analytics data from the use case
+	analyticsData, err := s.SubscriptioneUseCase.GetAnalytics(userID, startDate, endDate)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusInternalServerError, "Error fetching analytics data", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, errorRes)
+		return
+	}
+
+	// Create success response with analytics data
+	successRes := response.Response{
+		Message: "Analytics data retrieved successfully",
+		Data:    analyticsData,
+	}
+
+	// Send the response
+	c.JSON(http.StatusOK, successRes)
+}

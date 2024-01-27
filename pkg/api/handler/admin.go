@@ -241,3 +241,34 @@ func (ad *AdminHandler) GetSubscriptionPlans(c *gin.Context) {
 	// Return the list of subscription plans in the response
 	c.JSON(http.StatusOK, plans)
 }
+
+// @Summary		Get Reports List
+// @Description	Get a paginated list of user reports and count
+// @Tags			Admin
+// @Accept		json
+// @Produce		json
+// @Param			page	query	int	false	"Page number (default: 1)"
+// @Param			limit	query	int	false	"Number of items per page (default: 10)"
+// @Param			userId	query	int	false	"User ID for which reports are requested"
+// @Security		Bearer
+// @Success		200	{object}	response.Response{}
+// @Failure		400	{object}	response.Response{}
+// @Router			/admin/userReports [get]
+func (u *AdminHandler) GetReportsofuser(c *gin.Context) {
+	page, limit := getPaginationParams(c)
+	userId, _ := strconv.Atoi(c.Query("userId"))
+
+	reports, count, err := u.adminUseCase.GetUserReports(userId, page, limit)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not get reports", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	// Return the list of reports and count
+	successRes := response.ClientResponse(http.StatusOK, "Reports retrieved successfully", gin.H{
+		"reports": reports,
+		"count":   count,
+	}, nil)
+	c.JSON(http.StatusOK, successRes)
+}

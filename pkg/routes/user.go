@@ -15,10 +15,17 @@ func UserRoutes(engine *gin.RouterGroup, userHandler *handler.UserHandler, otpHa
 	engine.POST("/verifyotp", otpHandler.VerifyOTP)
 	engine.POST("/forgotpassword", otpHandler.ForgotPassword)
 	engine.GET("/category", categoyHandler.CategoriesList)
-
+	engine.GET("/plans", userHandler.GetSubscriptionPlans)
 	engine.GET("/category/videos", categoyHandler.ListVideosByCategory)
+	engine.GET("/videos", videohandler.ListtVideos)
 	// Auth middleware
 	engine.Use(middleware.UserAuthMiddleware)
+	engine.GET("/followingList", userHandler.GetFollowingList)
+	engine.GET("/followersList", userHandler.GetFollowersList)
+	engine.GET("/search", userHandler.SearchUsers)
+	engine.POST("search/toggleFollow", userHandler.ToggleFollow)
+	engine.GET("/analytics", subscriptionhandler.GetAnalytics)
+	engine.POST("/reportUser", userHandler.ReportUser)
 	engine.GET("/tags", videohandler.GetTagsForUserHandler)
 	engine.POST("/selectTags", videohandler.StoreUserTags)
 	engine.POST("/upload/video", videohandler.UploadVideo)

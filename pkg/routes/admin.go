@@ -14,6 +14,7 @@ func AdminRoutes(engine *gin.RouterGroup, adminHandler *handler.AdminHandler, ca
 	engine.DELETE("/deletetags", videoHandler.DeleteTagHandler)
 	engine.GET("/tags", videoHandler.GetTagsHandler)
 	engine.GET("/reports", adminHandler.GetReports)
+	engine.GET("/userReports", adminHandler.GetReportsofuser)
 	{
 		usermanagement := engine.Group("/users")
 		{
