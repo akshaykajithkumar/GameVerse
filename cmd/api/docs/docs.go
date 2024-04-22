@@ -24,7 +24,7 @@ const docTemplate = `{
                 ],
                 "description": "Add tags to the database",
                 "tags": [
-                    "Admin"
+                    "Admin Content Management"
                 ],
                 "summary": "Add Tags",
                 "parameters": [
@@ -107,7 +107,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "Admin Content Management"
                 ],
                 "summary": "List Categories",
                 "parameters": [
@@ -157,7 +157,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "Admin Content Management"
                 ],
                 "summary": "Add Category",
                 "parameters": [
@@ -200,7 +200,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "Admin Content Management"
                 ],
                 "summary": "Delete Category",
                 "parameters": [
@@ -243,7 +243,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "Admin Content Management"
                 ],
                 "summary": "Update Category",
                 "parameters": [
@@ -282,7 +282,7 @@ const docTemplate = `{
                 ],
                 "description": "Delete a tag from the database based on a tag ID",
                 "tags": [
-                    "Admin"
+                    "Admin Content Management"
                 ],
                 "summary": "Delete Tag",
                 "parameters": [
@@ -462,7 +462,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "Admin User Management"
                 ],
                 "summary": "Get Reports List",
                 "parameters": [
@@ -504,7 +504,7 @@ const docTemplate = `{
                 ],
                 "description": "Get a list of tags",
                 "tags": [
-                    "Admin"
+                    "Admin Content Management"
                 ],
                 "summary": "Get Tags",
                 "responses": {
@@ -538,7 +538,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "Admin User Management"
                 ],
                 "summary": "Get Reports List",
                 "parameters": [
@@ -592,7 +592,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "Admin User Management"
                 ],
                 "summary": "Get Users",
                 "parameters": [
@@ -642,7 +642,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "Admin User Management"
                 ],
                 "summary": "Block or unblock User",
                 "parameters": [

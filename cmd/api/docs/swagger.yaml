@@ -200,7 +200,7 @@ paths:
       - Bearer: []
       summary: Add Tags
       tags:
-      - Admin
+      - Admin Content Management
   /admin/adminlogin:
     post:
       consumes:
@@ -258,7 +258,7 @@ paths:
       - Bearer: []
       summary: List Categories
       tags:
-      - Admin
+      - Admin Content Management
   /admin/category/add:
     post:
       consumes:
@@ -285,7 +285,7 @@ paths:
       - Bearer: []
       summary: Add Category
       tags:
-      - Admin
+      - Admin Content Management
   /admin/category/delete:
     delete:
       consumes:
@@ -312,7 +312,7 @@ paths:
       - Bearer: []
       summary: Delete Category
       tags:
-      - Admin
+      - Admin Content Management
   /admin/category/update:
     patch:
       consumes:
@@ -340,7 +340,7 @@ paths:
       - Bearer: []
       summary: Update Category
       tags:
-      - Admin
+      - Admin Content Management
   /admin/deletetags:
     delete:
       description: Delete a tag from the database based on a tag ID
@@ -363,7 +363,7 @@ paths:
       - Bearer: []
       summary: Delete Tag
       tags:
-      - Admin
+      - Admin Content Management
   /admin/plans:
     get:
       consumes:
@@ -480,7 +480,7 @@ paths:
       - Bearer: []
       summary: Get Reports List
       tags:
-      - Admin
+      - Admin User Management
   /admin/tags:
     get:
       description: Get a list of tags
@@ -497,7 +497,7 @@ paths:
       - Bearer: []
       summary: Get Tags
       tags:
-      - Admin
+      - Admin Content Management
   /admin/userReports:
     get:
       consumes:
@@ -531,7 +531,7 @@ paths:
       - Bearer: []
       summary: Get Reports List
       tags:
-      - Admin
+      - Admin User Management
   /admin/users/getusers:
     get:
       consumes:
@@ -563,7 +563,7 @@ paths:
       - Bearer: []
       summary: Get Users
       tags:
-      - Admin
+      - Admin User Management
   /admin/users/toggle-block:
     post:
       consumes:
@@ -590,7 +590,7 @@ paths:
       - Bearer: []
       summary: Block or unblock User
       tags:
-      - Admin
+      - Admin User Management
   /users/analytics:
     get:
       consumes:

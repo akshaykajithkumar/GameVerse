@@ -395,7 +395,7 @@ func (u *VideoHandler) GetCommentsHandler(c *gin.Context) {
 // AddTagsHandler is a handler for adding tags to the database.
 // @Summary      Add Tags
 // @Description  Add tags to the database
-// @Tags         Admin
+// @Tags         Admin Content Management
 // @Security     Bearer
 // @Param        tags   query   string  true    "Comma-separated list of tags"
 // @Success      200  {object} response.Response{}
@@ -428,7 +428,7 @@ func (u *VideoHandler) AddTagsHandler(c *gin.Context) {
 // DeleteTagHandler is a handler for deleting a tag from the database based on a tag ID.
 // @Summary      Delete Tag
 // @Description  Delete a tag from the database based on a tag ID
-// @Tags         Admin
+// @Tags         Admin Content Management
 // @Security     Bearer
 // @Param        tagID   query   uint  true    "Tag ID to delete"
 // @Success      200  {object} response.Response{}
@@ -466,7 +466,7 @@ func (u *VideoHandler) DeleteTagHandler(c *gin.Context) {
 // GetTagsHandler is a handler for getting a list of tags.
 // @Summary      Get Tags
 // @Description  Get a list of tags
-// @Tags         Admin
+// @Tags         Admin Content Management
 // @Security     Bearer
 // @Success      200  {object} response.Response{}
 // @Failure      400  {object} response.Response{}

@@ -57,7 +57,7 @@ func (ad *AdminHandler) LoginHandler(c *gin.Context) { // login handler for the 
 
 // @Summary		Get Users
 // @Description	Retrieve users with pagination
-// @Tags			Admin
+// @Tags			Admin User Management
 // @Accept			json
 // @Produce		json
 // @Security		Bearer
@@ -95,7 +95,7 @@ func (ad *AdminHandler) GetUsers(c *gin.Context) {
 
 // @Summary		Block or unblock User
 // @Description	using this handler admins can block or unblock an user
-// @Tags			Admin
+// @Tags			Admin User Management
 // @Accept			json
 // @Produce		json
 // @Security		Bearer
@@ -120,7 +120,7 @@ func (ad *AdminHandler) ToggleBlockUser(c *gin.Context) {
 
 // @Summary		Get Reports List
 // @Description	Get a paginated list of user reports
-// @Tags			Admin
+// @Tags			Admin User Management
 // @Accept		json
 // @Produce		json
 // @Param			page	query	int	false	"Page number (default: 1)"
@@ -244,7 +244,7 @@ func (ad *AdminHandler) GetSubscriptionPlans(c *gin.Context) {
 
 // @Summary		Get Reports List
 // @Description	Get a paginated list of user reports and count
-// @Tags			Admin
+// @Tags			Admin User Management
 // @Accept		json
 // @Produce		json
 // @Param			page	query	int	false	"Page number (default: 1)"

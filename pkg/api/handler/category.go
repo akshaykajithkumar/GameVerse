@@ -22,7 +22,7 @@ func NewCategoryHandler(usecase services.CategoryUseCase) *CategoryHandler {
 
 // @Summary		Add Category
 // @Description	Admin can add new categories for contents
-// @Tags			Admin
+// @Tags			Admin Content Management
 // @Accept			json
 // @Produce		    json
 // @Param			category	query	string	true	"category"
@@ -47,7 +47,7 @@ func (Cat *CategoryHandler) AddCategory(c *gin.Context) {
 
 // @Summary		Update Category
 // @Description	Admin can update name of a category into new name
-// @Tags			Admin
+// @Tags			Admin Content Management
 // @Accept			json
 // @Produce		    json
 // @Param			set_new_name	body	models.SetNewName	true	"set new name"
@@ -79,7 +79,7 @@ func (Cat *CategoryHandler) UpdateCategory(c *gin.Context) {
 
 // @Summary		Delete Category
 // @Description	Admin can delete a category
-// @Tags			Admin
+// @Tags			Admin Content Management
 // @Accept			json
 // @Produce		    json
 // @Param			id	query	string	true	"id"
@@ -104,7 +104,7 @@ func (Cat *CategoryHandler) DeleteCategory(c *gin.Context) {
 
 // @Summary		List Categories
 // @Description	Admin can view the list of  Categories
-// @Tags			Admin
+// @Tags			Admin Content Management
 // @Accept			json
 // @Produce		    json
 // @Param			page	query  string 	true	"page"

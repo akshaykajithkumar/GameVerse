@@ -6,18 +6,11 @@ import (
 
 	// "github.com/agnivade/levenshtein"
 
-	"context"
-	"errors"
-	"log"
 	conf "main/pkg/config"
 	"main/pkg/domain"
-	"main/pkg/helper"
-	"main/pkg/helper/kafka"
 	interfaces "main/pkg/repository/interface"
 	services "main/pkg/usecase/interface"
 	"main/pkg/utils/models"
-	"mime/multipart"
-	"time"
 
 	"github.com/agnivade/levenshtein"
 )
@@ -35,35 +28,35 @@ func NewVideoUseCase(videoRepo interfaces.VideoRepository) services.VideoUseCase
 	}
 }
 
-// UploadVideo uploads a video file, encodes it, adds it to S3, and stores details in the database.
-func (uc *VideoUseCase) UploadVideo(userID int, categoryID int, title, description string, file *multipart.FileHeader, tags []string, exclusive bool) error {
-	// Encode video
-	videoData, err := helper.EncodeVideo(file)
-	if err != nil {
-		return err
-	}
+// // UploadVideo uploads a video file, encodes it, adds it to S3, and stores details in the database.
+// func (uc *VideoUseCase) UploadVideo(userID int, categoryID int, title, description string, file *multipart.FileHeader, tags []string, exclusive bool) error {
+// 	// Encode video
+// 	videoData, err := helper.EncodeVideo(file)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	// Upload video to S3
-	videoURL, err := helper.AddVideoToS3(videoData, uc.conf)
-	if err != nil {
-		return err
-	}
+// 	// Upload video to S3
+// 	videoURL, err := helper.AddVideoToS3(videoData, uc.conf)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	// Store video details in the database
-	videoID, err := uc.videoRepo.UploadVideo(userID, categoryID, title, description, videoURL, tags, exclusive)
-	if err != nil {
-		return err
-	}
+// 	// Store video details in the database
+// 	videoID, err := uc.videoRepo.UploadVideo(userID, categoryID, title, description, videoURL, tags, exclusive)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	if err := kafka.ProduceToKafka(userID, int(videoID), videoURL); err != nil {
-		// Handle the Kafka produce error appropriately
-		log.Println("Error producing to Kafka:", err)
-		// You might choose to return the error or handle it differently
-		return err
-	}
+// 	if err := kafka.ProduceToKafka(userID, int(videoID), videoURL); err != nil {
+// 		// Handle the Kafka produce error appropriately
+// 		log.Println("Error producing to Kafka:", err)
+// 		// You might choose to return the error or handle it differently
+// 		return err
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
 func (uc *VideoUseCase) ListVideos(userID int, page, limit int) ([]models.Video, error) {
 	// Call the repository to get the paginated list of videos
@@ -99,22 +92,36 @@ func (uc *VideoUseCase) DeleteVideo(videoID int) error {
 	return nil
 }
 
-// WatchVideo watches a video for the specified user and video ID.
-// func (uc *VideoUseCase) WatchVideo(userID int, videoID int) (string, error) {
-// 	kafkaTopic := "video_stream"
+// func (uc *VideoUseCase) WatchVideo(userID, videoID, creatorID int) (string, error) {
+// 	// Check if the video is exclusive
+// 	isExclusive, err := uc.videoRepo.IsVideoExclusive(videoID)
+// 	if err != nil {
+// 		// Handle error if needed
+// 		return "", err
+// 	}
 
-// 	ctx, cancel := context.WithCancel(context.Background())
+// 	if isExclusive {
+// 		// Check if the user is subscribed to the creator
+// 		isSubscribed, err := uc.videoRepo.IsUserSubscribed(userID, creatorID)
+// 		if err != nil {
+// 			// Handle error if needed
+// 			return "", err
+// 		}
+
+// 		if !isSubscribed {
+// 			return "", errors.New("user is not subscribed to the creator")
+// 		}
+// 	}
+// 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 // 	defer cancel()
 
 // 	urlChannel := make(chan string)
-// 	defer close(urlChannel)
 
 // 	go func() {
 // 		// Start Kafka consumer in a goroutine
-// 		kafka.ConsumeURLFromKafkaForUser(ctx, kafkaTopic, userID, videoID, urlChannel)
+// 		kafka.ConsumeURLFromKafkaForUser(ctx, userID, videoID, urlChannel)
 // 	}()
 
-// 	// Wait for video URL from Kafka or timeout after 30 seconds
 // 	select {
 // 	case videoURL := <-urlChannel:
 // 		// Increment the Views count for the watched video
@@ -126,61 +133,15 @@ func (uc *VideoUseCase) DeleteVideo(videoID int) error {
 // 		// Optionally, perform additional actions with the videoURL if needed
 // 		return videoURL, nil
 
-//		case <-time.After(30 * time.Second):
-//			// Timeout case to avoid blocking indefinitely
-//			return "", errors.New("timed out waiting for video URL from Kafka")
+//		case <-ctx.Done():
+//			// Context done, check if it's due to a timeout
+//			if ctx.Err() == context.DeadlineExceeded {
+//				return "", errors.New("timed out waiting for video URL from Kafka")
+//			}
+//			// Context done for other reasons (possibly due to an error in consumer)
+//			return "", ctx.Err()
 //		}
 //	}
-func (uc *VideoUseCase) WatchVideo(userID, videoID, creatorID int) (string, error) {
-	// Check if the video is exclusive
-	isExclusive, err := uc.videoRepo.IsVideoExclusive(videoID)
-	if err != nil {
-		// Handle error if needed
-		return "", err
-	}
-
-	if isExclusive {
-		// Check if the user is subscribed to the creator
-		isSubscribed, err := uc.videoRepo.IsUserSubscribed(userID, creatorID)
-		if err != nil {
-			// Handle error if needed
-			return "", err
-		}
-
-		if !isSubscribed {
-			return "", errors.New("user is not subscribed to the creator")
-		}
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
-	defer cancel()
-
-	urlChannel := make(chan string)
-
-	go func() {
-		// Start Kafka consumer in a goroutine
-		kafka.ConsumeURLFromKafkaForUser(ctx, userID, videoID, urlChannel)
-	}()
-
-	select {
-	case videoURL := <-urlChannel:
-		// Increment the Views count for the watched video
-		if err := uc.videoRepo.IncrementVideoViews(videoID); err != nil {
-			// Handle error if needed
-			return "", err
-		}
-
-		// Optionally, perform additional actions with the videoURL if needed
-		return videoURL, nil
-
-	case <-ctx.Done():
-		// Context done, check if it's due to a timeout
-		if ctx.Err() == context.DeadlineExceeded {
-			return "", errors.New("timed out waiting for video URL from Kafka")
-		}
-		// Context done for other reasons (possibly due to an error in consumer)
-		return "", ctx.Err()
-	}
-}
 func (uc *VideoUseCase) ToggleLikeVideo(userID uint, videoID uint) error {
 	// Check if the user has already liked the video
 	likedByUser := uc.videoRepo.IsLikedByUser(userID, videoID)
