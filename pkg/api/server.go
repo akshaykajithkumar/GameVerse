@@ -49,8 +49,7 @@ func NewServerHTTP(userHandler *handler.UserHandler, otpHandler *handler.OtpHand
 func (sh *ServerHTTP) Start() {
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080" // Default to port 1245 if PORT environment variable is not set
+		port = "8080" // Default to port 8080 if PORT environment variable is not set
 	}
-	sh.engine.Run(":" + port)
-
+	sh.engine.Run("0.0.0.0:" + port)
 }
