@@ -28,7 +28,7 @@ func UserRoutes(engine *gin.RouterGroup, userHandler *handler.UserHandler, otpHa
 	engine.POST("/reportUser", userHandler.ReportUser)
 	engine.GET("/tags", videohandler.GetTagsForUserHandler)
 	engine.POST("/selectTags", videohandler.StoreUserTags)
-	engine.POST("/upload/video", videohandler.UploadVideo)
+	// engine.POST("/upload/video", videohandler.UploadVideo)
 	// payment := engine.Group("users/plans")
 
 	engine.POST("plans/choose-plan", subscriptionhandler.ChoosePlan)
@@ -42,7 +42,7 @@ func UserRoutes(engine *gin.RouterGroup, userHandler *handler.UserHandler, otpHa
 
 		profile.GET("/videos/comments", videohandler.GetCommentsHandler)
 		profile.POST("/videos/comment", videohandler.CommentVideoHandler)
-		profile.GET("/videos/watch", videohandler.WatchVideo)
+		// profile.GET("/videos/watch", videohandler.WatchVideo)
 		profile.PATCH("/videos/editVideo", videohandler.EditVideoDetails)
 		profile.DELETE("/videos/delete", videohandler.DeleteVideo)
 		profile.POST("/videos/like", videohandler.ToggleLikeVideo)

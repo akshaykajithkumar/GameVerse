@@ -1586,50 +1586,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/profile/videos/watch": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Watch a specific video for a particular user",
-                "tags": [
-                    "User"
-                ],
-                "summary": "Watch Video",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Creator ID",
-                        "name": "creatorID",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Video ID",
-                        "name": "videoID",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
         "/users/reportUser": {
             "post": {
                 "security": [
@@ -1913,83 +1869,6 @@ const docTemplate = `{
                     "User"
                 ],
                 "summary": "Get Tags",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/upload/video": {
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Upload a video file along with title, description, and category ID",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Upload Video",
-                "parameters": [
-                    {
-                        "type": "file",
-                        "description": "Video File",
-                        "name": "VideoFile",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Category ID",
-                        "name": "CategoryID",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Title",
-                        "name": "Title",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Description",
-                        "name": "Description",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "array",
-                        "description": "Video Tags",
-                        "name": "tags",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "Exclusive Video",
-                        "name": "exclusive",
-                        "in": "query"
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",

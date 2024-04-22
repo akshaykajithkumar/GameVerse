@@ -22,60 +22,60 @@ func NewVideoHandler(usecase services.VideoUseCase) *VideoHandler {
 	}
 }
 
-// UploadVideo is a handler for uploading video files.
-// @Summary      Upload Video
-// @Description  Upload a video file along with title, description, and category ID
-// @Tags         User
-// @Accept       multipart/form-data
-// @Produce      json
-// @Security     Bearer
-// @Param        VideoFile   formData  file    true  "Video File"
-// @Param        CategoryID   formData  int     true  "Category ID"
-// @Param        Title        formData  string  true  "Title"
-// @Param        Description  formData  string  true  "Description"
-// @Param        tags         formData   array   true    "Video Tags"
-// @Param        exclusive    query      bool    false   "Exclusive Video"
-// @Success      200  {object} response.Response{}
-// @Failure      400  {object} response.Response{}
-// @Router       /users/upload/video [post]
-func (u *VideoHandler) UploadVideo(c *gin.Context) {
-	userID, err := helper.GetUserID(c)
-	if err != nil {
-		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not get userID", nil, err.Error())
-		c.JSON(http.StatusBadRequest, errorRes)
-		return
-	}
+// // UploadVideo is a handler for uploading video files.
+// // @Summary      Upload Video
+// // @Description  Upload a video file along with title, description, and category ID
+// // @Tags         User
+// // @Accept       multipart/form-data
+// // @Produce      json
+// // @Security     Bearer
+// // @Param        VideoFile   formData  file    true  "Video File"
+// // @Param        CategoryID   formData  int     true  "Category ID"
+// // @Param        Title        formData  string  true  "Title"
+// // @Param        Description  formData  string  true  "Description"
+// // @Param        tags         formData   array   true    "Video Tags"
+// // @Param        exclusive    query      bool    false   "Exclusive Video"
+// // @Success      200  {object} response.Response{}
+// // @Failure      400  {object} response.Response{}
+// // @Router       /users/upload/video [post]
+// func (u *VideoHandler) UploadVideo(c *gin.Context) {
+// 	userID, err := helper.GetUserID(c)
+// 	if err != nil {
+// 		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not get userID", nil, err.Error())
+// 		c.JSON(http.StatusBadRequest, errorRes)
+// 		return
+// 	}
 
-	// Parse form data
-	categoryID, _ := strconv.Atoi(c.PostForm("CategoryID"))
-	title := c.PostForm("Title")
-	description := c.PostForm("Description")
+// 	// Parse form data
+// 	categoryID, _ := strconv.Atoi(c.PostForm("CategoryID"))
+// 	title := c.PostForm("Title")
+// 	description := c.PostForm("Description")
 
-	// Retrieve the file from the form data
-	file, err := c.FormFile("VideoFile")
-	if err != nil {
-		errorRes := response.ClientResponse(http.StatusBadRequest, "Error retrieving video file from form", nil, err.Error())
-		c.JSON(http.StatusBadRequest, errorRes)
-		return
-	}
+// 	// Retrieve the file from the form data
+// 	file, err := c.FormFile("VideoFile")
+// 	if err != nil {
+// 		errorRes := response.ClientResponse(http.StatusBadRequest, "Error retrieving video file from form", nil, err.Error())
+// 		c.JSON(http.StatusBadRequest, errorRes)
+// 		return
+// 	}
 
-	// Retrieve tags from the form data
-	tags := c.PostFormArray("tags")
+// 	// Retrieve tags from the form data
+// 	tags := c.PostFormArray("tags")
 
-	// Parse exclusive parameter from query params
-	exclusive, _ := strconv.ParseBool(c.Query("exclusive"))
+// 	// Parse exclusive parameter from query params
+// 	exclusive, _ := strconv.ParseBool(c.Query("exclusive"))
 
-	// Call the use case to upload the video, passing the exclusive parameter
-	if err := u.VideoUseCase.UploadVideo(int(userID), categoryID, title, description, file, tags, exclusive); err != nil {
-		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not upload video", nil, err.Error())
-		c.JSON(http.StatusBadRequest, errorRes)
-		return
-	}
+// 	// Call the use case to upload the video, passing the exclusive parameter
+// 	if err := u.VideoUseCase.UploadVideo(int(userID), categoryID, title, description, file, tags, exclusive); err != nil {
+// 		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not upload video", nil, err.Error())
+// 		c.JSON(http.StatusBadRequest, errorRes)
+// 		return
+// 	}
 
-	// Customize the response based on your needs
-	successRes := response.ClientResponse(http.StatusOK, "Video uploaded successfully", nil, nil)
-	c.JSON(http.StatusOK, successRes)
-}
+// 	// Customize the response based on your needs
+// 	successRes := response.ClientResponse(http.StatusOK, "Video uploaded successfully", nil, nil)
+// 	c.JSON(http.StatusOK, successRes)
+// }
 
 // ListVideos is a handler for listing videos for a particular user with pagination.
 // @Summary      List Videos
@@ -204,54 +204,54 @@ func (u *VideoHandler) DeleteVideo(c *gin.Context) {
 	c.JSON(http.StatusOK, successRes)
 }
 
-// WatchVideo is a handler for watching a specific video.
-// @Summary      Watch Video
-// @Description  Watch a specific video for a particular user
-// @Tags         User
-// @Security     Bearer
-// @Param        creatorID   query   int     true    "Creator ID"
-// @Param        videoID  query   int     true    "Video ID"
-// @Success      200  {object} response.Response{}
-// @Failure      400  {object} response.Response{}
-// @Router       /users/profile/videos/watch [get]
-func (u *VideoHandler) WatchVideo(c *gin.Context) {
-	userID, err := helper.GetUserID(c)
-	if err != nil {
-		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not get userID", nil, err.Error())
-		c.JSON(http.StatusBadRequest, errorRes)
-		return
-	}
-	creatorIDStr := c.Query("creatorID")
-	videoIDStr := c.Query("videoID")
+// // WatchVideo is a handler for watching a specific video.
+// // @Summary      Watch Video
+// // @Description  Watch a specific video for a particular user
+// // @Tags         User
+// // @Security     Bearer
+// // @Param        creatorID   query   int     true    "Creator ID"
+// // @Param        videoID  query   int     true    "Video ID"
+// // @Success      200  {object} response.Response{}
+// // @Failure      400  {object} response.Response{}
+// // @Router       /users/profile/videos/watch [get]
+// func (u *VideoHandler) WatchVideo(c *gin.Context) {
+// 	userID, err := helper.GetUserID(c)
+// 	if err != nil {
+// 		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not get userID", nil, err.Error())
+// 		c.JSON(http.StatusBadRequest, errorRes)
+// 		return
+// 	}
+// 	creatorIDStr := c.Query("creatorID")
+// 	videoIDStr := c.Query("videoID")
 
-	// Validate and parse userID parameter
-	creatorID, err := strconv.Atoi(creatorIDStr)
-	if err != nil {
-		errorRes := response.ClientResponse(http.StatusBadRequest, "userID parameter not in the right format", nil, err.Error())
-		c.JSON(http.StatusBadRequest, errorRes)
-		return
-	}
+// 	// Validate and parse userID parameter
+// 	creatorID, err := strconv.Atoi(creatorIDStr)
+// 	if err != nil {
+// 		errorRes := response.ClientResponse(http.StatusBadRequest, "userID parameter not in the right format", nil, err.Error())
+// 		c.JSON(http.StatusBadRequest, errorRes)
+// 		return
+// 	}
 
-	// Validate and parse videoID parameter
-	videoID, err := strconv.Atoi(videoIDStr)
-	if err != nil {
-		errorRes := response.ClientResponse(http.StatusBadRequest, "videoID parameter not in the right format", nil, err.Error())
-		c.JSON(http.StatusBadRequest, errorRes)
-		return
-	}
+// 	// Validate and parse videoID parameter
+// 	videoID, err := strconv.Atoi(videoIDStr)
+// 	if err != nil {
+// 		errorRes := response.ClientResponse(http.StatusBadRequest, "videoID parameter not in the right format", nil, err.Error())
+// 		c.JSON(http.StatusBadRequest, errorRes)
+// 		return
+// 	}
 
-	// Call the use case to watch the video for the user
-	videoURL, err := u.VideoUseCase.WatchVideo(userID, videoID, creatorID)
-	if err != nil {
-		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not watch video", nil, err.Error())
-		c.JSON(http.StatusBadRequest, errorRes)
-		return
-	}
+// 	// Call the use case to watch the video for the user
+// 	videoURL, err := u.VideoUseCase.WatchVideo(userID, videoID, creatorID)
+// 	if err != nil {
+// 		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not watch video", nil, err.Error())
+// 		c.JSON(http.StatusBadRequest, errorRes)
+// 		return
+// 	}
 
-	// Customize the response based on your needs
-	successRes := response.ClientResponse(http.StatusOK, "follow the link to watch the video", videoURL, nil)
-	c.JSON(http.StatusOK, successRes)
-}
+// 	// Customize the response based on your needs
+// 	successRes := response.ClientResponse(http.StatusOK, "follow the link to watch the video", videoURL, nil)
+// 	c.JSON(http.StatusOK, successRes)
+// }
 
 // ToggleLikeVideo is a handler for toggling the like status of a video.
 // @Summary      Toggle Like Video

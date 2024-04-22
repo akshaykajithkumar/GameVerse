@@ -1173,34 +1173,6 @@ paths:
       summary: Recommendation List
       tags:
       - User
-  /users/profile/videos/watch:
-    get:
-      description: Watch a specific video for a particular user
-      parameters:
-      - description: Creator ID
-        in: query
-        name: creatorID
-        required: true
-        type: integer
-      - description: Video ID
-        in: query
-        name: videoID
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.Response'
-      security:
-      - Bearer: []
-      summary: Watch Video
-      tags:
-      - User
   /users/reportUser:
     post:
       consumes:
@@ -1391,58 +1363,6 @@ paths:
       security:
       - Bearer: []
       summary: Get Tags
-      tags:
-      - User
-  /users/upload/video:
-    post:
-      consumes:
-      - multipart/form-data
-      description: Upload a video file along with title, description, and category
-        ID
-      parameters:
-      - description: Video File
-        in: formData
-        name: VideoFile
-        required: true
-        type: file
-      - description: Category ID
-        in: formData
-        name: CategoryID
-        required: true
-        type: integer
-      - description: Title
-        in: formData
-        name: Title
-        required: true
-        type: string
-      - description: Description
-        in: formData
-        name: Description
-        required: true
-        type: string
-      - description: Video Tags
-        in: formData
-        name: tags
-        required: true
-        type: array
-      - description: Exclusive Video
-        in: query
-        name: exclusive
-        type: boolean
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.Response'
-      security:
-      - Bearer: []
-      summary: Upload Video
       tags:
       - User
   /users/verifyotp:
