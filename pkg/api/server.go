@@ -1,8 +1,6 @@
 package http
 
 import (
-	"os"
-
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -41,15 +39,7 @@ func NewServerHTTP(userHandler *handler.UserHandler, otpHandler *handler.OtpHand
 	}
 }
 
-// func (sh *ServerHTTP) Start() {
-// 	sh.engine.Run(":1245")
-
-// }
-
 func (sh *ServerHTTP) Start() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "1243" // Default to port 8080 if PORT environment variable is not set
-	}
-	sh.engine.Run("0.0.0.0:" + port)
+	sh.engine.Run(":1245")
+
 }
