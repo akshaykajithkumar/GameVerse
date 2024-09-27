@@ -22,43 +22,43 @@ func NewVideoRepository(db *gorm.DB) interfaces.VideoRepository {
 	}
 }
 
-// UploadVideo uploads video details to the database.
-// func (vr *VideoRepository) UploadVideo(userID int, categoryID int, title, description, url string) error {
-// 	video := domain.Video{
-// 		UserID:      uint(userID),
-// 		CategoryID:  categoryID,
-// 		Title:       title,
-// 		Description: description,
-// 		URL:         url,
-// 	}
+UploadVideo uploads video details to the database.
+func (vr *VideoRepository) UploadVideo(userID int, categoryID int, title, description, url string) error {
+	video := domain.Video{
+		UserID:      uint(userID),
+		CategoryID:  categoryID,
+		Title:       title,
+		Description: description,
+		URL:         url,
+	}
 
-// 	if err := vr.DB.Create(&video).Error; err != nil {
-// 		return err
-// 	}
+	if err := vr.DB.Create(&video).Error; err != nil {
+		return err
+	}
 
-//		return nil
-//	}
-//
-// UploadVideo stores video details in the database, including tags.
+		return nil
+	}
 
-// func (vr *VideoRepository) UploadVideo(userID int, categoryID int, title, description, url string, tags []string) (uint, error) {
-// 	// Create a new Video instance
-// 	video := domain.Video{
-// 		UserID:      uint(userID),
-// 		CategoryID:  categoryID,
-// 		Title:       title,
-// 		Description: description,
-// 		URL:         url,
-// 		// Tags:        tags,
-// 	}
+UploadVideo stores video details in the database, including tags.
 
-// 	if err := vr.DB.Create(&video).Error; err != nil {
-// 		return 0, err
-// 	}
+func (vr *VideoRepository) UploadVideo(userID int, categoryID int, title, description, url string, tags []string) (uint, error) {
+	// Create a new Video instance
+	video := domain.Video{
+		UserID:      uint(userID),
+		CategoryID:  categoryID,
+		Title:       title,
+		Description: description,
+		URL:         url,
+		// Tags:        tags,
+	}
 
-//		// Assuming that video.ID is the auto-generated ID of the newly created video
-//		return video.ID, nil
-//	}
+	if err := vr.DB.Create(&video).Error; err != nil {
+		return 0, err
+	}
+
+		// Assuming that video.ID is the auto-generated ID of the newly created video
+		return video.ID, nil
+	}
 func (vr *VideoRepository) UploadVideo(userID int, categoryID int, title, description, url string, tags []string, exclusive bool) (uint, error) {
 	// Create a new Video instance
 	video := domain.Video{
